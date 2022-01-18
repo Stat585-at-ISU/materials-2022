@@ -1,0 +1,130 @@
+---
+title: "Stat 585 - Working in teams"
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: center, middle
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+# Tools for collaborating in teams
+
+---
+
+## A test case
+
+The dataset `brfss_iowa.csv` (linked from website) contains 6227 records from the Behavioral Risk Factor Surveillance System (BRFSS) for Iowans.
+
+> The Behavioral Risk Factor Surveillance System (BRFSS) is the nation's premier system of health-related telephone surveys that collect state data about U.S. residents regarding their health-related risk behaviors.
+
+It is conducted annually by the Center for Disease Control and Prevention (CDC).
+
+Codebook with detailed explanations of variables is [available here](https://www.cdc.gov/brfss/annual_data/2015/pdf/codebook15_llcp.pdf).
+
+
+---
+class: inverse
+## Your turn
+
+You are asked to investigate the relationship between height and weight of Iowans based on the 2015 BRFSS records (see course website for data).
+
+In the next 20 mins:
+
+0. Complete the following tasks and **write instructions / documentation** for a collaborator to be able to reproduce your findings.
+
+1. Verify that there are 6227 cases (= number of interviews) in the data. 
+
+2. Verify that there are variables `WEIGHT2` and `HEIGHT3` in the data and read the description of the variables in the codebook. 
+
+3. How are height and weight related? Find correlations of weight and height by gender (`SEX`). How many values are the correlations based on for each gender?
+
+2. Write a short report of your findings. Address potential problems in the data.
+
+
+
+---
+class: inverse
+## Your turn
+
+In the next 10 mins:
+
+1. Introduce yourself to your neighbor. 
+
+2. Swap the report and the instructions / documentation with your collaborator - **BUT DO NOT TALK ABOUT THE DATA OR THE ANALYSIS** (yet)
+
+3. Try to reproduce your neighbor's findings. 
+
+
+Thanks to  Jenny Bryan and Mine Cetinkaya-Rundel for the idea for the original  example!
+
+
+---
+
+## How did that go? 
+
+![](images/desperation-0.jpg)
+
+
+- Where did things get problematic?
+
+---
+
+## Reflection
+
+- What tools did you use?
+
+- Were you successful in reproducing each others' work? 
+<br><br>
+
+
+- What would happen if your collaborator is no longer available to walk you through 
+their analysis?
+
+- What made it easy / hard for reproducing your partners' work?
+
+- What would have to happen if 
+    - you had to swap out the dataset or extend the analysis further?
+    - you caught further data errors and had to re-create the analysis
+    with corrections?
+    - you had to revert back to the original dataset?
+
+---
+
+## Summary
+
+- Everyone struggles with reproducibility and it is a hindrance to moving 
+science forward
+
+- Even with a fairly simple analysis challenges were faced in four main areas:
+organization, documentation, automation, and dissemination
+
+---
+class: inverse, middle, center
+# Facets of reproducibility
+
+---
+
+## Four facets of reproducibility
+
+1. **Documentation:** difference between binary files (e.g. docx) and text files and
+why text files are preferred for documentation
+    - *Protip:* Use markdown to document your workflow so that anyone can pick up your
+    data and follow what you are doing
+    - *Protip:* Use literate programming so that your analysis and your results are
+    tightly connected, or better yet, unseparable
+
+2. **Organization:** tools to organize your projects so that you don't have a single 
+folder with hundreds of files
+
+3. **Automation:** the power of scripting to create automated data analyses
+
+4. **Dissemination:** publishing is not the end of your analysis, rather it is a way 
+station towards your future research and the future research of others

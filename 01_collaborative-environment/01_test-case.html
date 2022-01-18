@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Stat 585 - Working in teams</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Heike Hofmann" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Stat 585 - Working in teams
+### Heike Hofmann
+
+---
+
+class: center, middle
+
+
+
+# Tools for collaborating in teams
+
+---
+
+## A test case
+
+The dataset `brfss_iowa.csv` (linked from website) contains 6227 records from the Behavioral Risk Factor Surveillance System (BRFSS) for Iowans.
+
+&gt; The Behavioral Risk Factor Surveillance System (BRFSS) is the nation's premier system of health-related telephone surveys that collect state data about U.S. residents regarding their health-related risk behaviors.
+
+It is conducted annually by the Center for Disease Control and Prevention (CDC).
+
+Codebook with detailed explanations of variables is [available here](https://www.cdc.gov/brfss/annual_data/2015/pdf/codebook15_llcp.pdf).
+
+
+---
+class: inverse
+## Your turn
+
+You are asked to investigate the relationship between height and weight of Iowans based on the 2015 BRFSS records (see course website for data).
+
+In the next 20 mins:
+
+0. Complete the following tasks and **write instructions / documentation** for a collaborator to be able to reproduce your findings.
+
+1. Verify that there are 6227 cases (= number of interviews) in the data. 
+
+2. Verify that there are variables `WEIGHT2` and `HEIGHT3` in the data and read the description of the variables in the codebook. 
+
+3. How are height and weight related? Find correlations of weight and height by gender (`SEX`). How many values are the correlations based on for each gender?
+
+2. Write a short report of your findings. Address potential problems in the data.
+
+
+
+---
+class: inverse
+## Your turn
+
+In the next 10 mins:
+
+1. Introduce yourself to your neighbor. 
+
+2. Swap the report and the instructions / documentation with your collaborator - **BUT DO NOT TALK ABOUT THE DATA OR THE ANALYSIS** (yet)
+
+3. Try to reproduce your neighbor's findings. 
+
+
+Thanks to  Jenny Bryan and Mine Cetinkaya-Rundel for the idea for the original  example!
+
+
+---
+
+## How did that go? 
+
+![](images/desperation-0.jpg)
+
+
+- Where did things get problematic?
+
+---
+
+## Reflection
+
+- What tools did you use?
+
+- Were you successful in reproducing each others' work? 
+&lt;br&gt;&lt;br&gt;
+
+
+- What would happen if your collaborator is no longer available to walk you through 
+their analysis?
+
+- What made it easy / hard for reproducing your partners' work?
+
+- What would have to happen if 
+    - you had to swap out the dataset or extend the analysis further?
+    - you caught further data errors and had to re-create the analysis
+    with corrections?
+    - you had to revert back to the original dataset?
+
+---
+
+## Summary
+
+- Everyone struggles with reproducibility and it is a hindrance to moving 
+science forward
+
+- Even with a fairly simple analysis challenges were faced in four main areas:
+organization, documentation, automation, and dissemination
+
+---
+class: inverse, middle, center
+# Facets of reproducibility
+
+---
+
+## Four facets of reproducibility
+
+1. **Documentation:** difference between binary files (e.g. docx) and text files and
+why text files are preferred for documentation
+    - *Protip:* Use markdown to document your workflow so that anyone can pick up your
+    data and follow what you are doing
+    - *Protip:* Use literate programming so that your analysis and your results are
+    tightly connected, or better yet, unseparable
+
+2. **Organization:** tools to organize your projects so that you don't have a single 
+folder with hundreds of files
+
+3. **Automation:** the power of scripting to create automated data analyses
+
+4. **Dissemination:** publishing is not the end of your analysis, rather it is a way 
+station towards your future research and the future research of others
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
