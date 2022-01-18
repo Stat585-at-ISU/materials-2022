@@ -34,7 +34,7 @@ Codebook with detailed explanations of variables is [available here](https://www
 class: inverse
 ## Your turn
 
-You are asked to investigate the relationship between height and weight of Iowans based on the 2015 BRFSS records (see course website for data).
+You are asked to investigate the relationship between height and weight of Iowans based on the [2015 BRFSS records](https://raw.githubusercontent.com/Stat585-at-ISU/materials-2022/main/01_collaborative-environment/data/brfss_iowa.csv).
 
 In the next 20 mins:
 
