@@ -1,0 +1,137 @@
+---
+title: 'Lab Assignment #1'
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, echo = TRUE)
+```
+# How this is going to work
+
+1. Find your team
+
+2. You are asked to work through a set of questions 
+
+3. The deliverable is a final push to your github repository and (in Canvas) an upload of the link to your repository. Don't forget that ALL of the team members should contribute to the repo :)
+
+---
+
+# Agenda for today
+
+1. Link RStudio and git
+
+2. Build a book
+
+3. Deal with the weather (stations) ...
+
+4. ... and some funny file formats
+
+---
+
+# Repo for the lab
+
+1. Accept the link to the github classroom assignment (sent by email). 
+
+2. Check whether one of your team members has already created a team. In that case, join them. If none of your team members is listed yet, create a team.
+
+3. Link the repository to RStudio ... (see next set of slides)
+
+---
+class: inverse, middle, center
+# Connecting RStudio and git
+
+---
+
+# Connecting RStudio and git
+
+Work through [chapter 12](https://happygitwithr.com/rstudio-git-github.html#rstudio-git-github) of Jenny Bryan's book "Happy git with R"
+
+Use your lab's repository as the example repository in RStudio. 
+
+
+Add a link to the lab repository in your write-up.
+
+---
+class: inverse, center, middle
+# Building a book
+
+---
+
+## Building a book
+
+The goal of this  part of the lab is to build the html version of the 2nd edition for Hadley Wickham's book `Advanced R Programming` from a github repository.
+
+Steps:
+
+1. Clone the repository `https://github.com/hadley/adv-r`.
+2. Open the R project in the repository in RStudio.
+3. Activate the `Build` tab (by default in the top right panel). Click on the `Build Book` button.
+4. The book will be available in html format as index.html
+
+Deliverable (1): what is the last word in chapter 15? - You don't have to answer this question, if things don't work, but please answer the next one and see the next page.
+
+Deliverable (2): Write a paragraph on the biggest problem you encountered when you were building the book, and how you managed to solve it.
+
+---
+
+## What to do when things don't work?
+
+Errors happen, they are frustrating, but if we learn something from them, we can turn them into valuable experiences.
+
+- check the Questions and Answers forum in Canvas whether there is a solution available for your problem. 
+
+- if the above document does (not yet) include your question, document the error you encounter (be as concise and specific as you can at the same time)
+
+- if the Question and Answers forum does (not yet) include a solution, describe one approach on how you tried to solve the problem (and how this did not work).
+
+- submit the description of your problem in Canvas at Discussions > Questions and Answers.  Write the paragraph in the mindset that you want to get help from somebody, and you try to describe the problem you are encountering. 
+
+- Extra points (2.5 pts for the first suggested working solution): post a solution to one of the problems in the Questions and Answers forum (your own or a team member's question does not count!). 
+
+---
+class: inverse, middle
+# Weather stations
+
+---
+
+## US weather stations
+
+
+The National Climate Data Center at NOAA publishes information on temperature and precipation across a network of stations in the US.
+
+The Data can be accessed through via https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/, a code book with a description of the data structure is available at
+https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/readme.txt
+
+1. Download a copy of the file `ushcn-v2.5-stations.txt`.
+
+2. Make yourself familar with the command `read_fwf` from package `readr`. 
+
+3. Use the codebook description for the stations file, extract all columns and bring them into the intended format (i.e. numbers are numbers)
+
+4. Create a plot with `ggplot2` to show latitude, longitude and elevation. Can you also include state information and time zone?
+
+5. Deliverable: include the code necessary to read the file and to create the plot in `README.Rmd`. Also include the file `ushcn-v2.5-stations.txt` to your repository. 
+
+
+---
+
+# More weather data
+
+The file `ushcn.tavg.latest.raw.tar.gz`
+at ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5 contains data on average temperatures across the US. 
+
+1. Download the file and get it to open with tools available in R. (Double-clicking is cheating! :) )
+
+2. Determine how many files are contained inside `ushcn.tavg.latest.raw.tar.gz` and the name of the file containing the temperature data of your home towns or Fort Dodge, IA (please specify).
+
+3. Deliverable: In the Rmarkdown file include the code necessary to extract files from the archive `ushcn.tavg.latest.raw.tar.gz`. Include code to answer the above questions.
+
+If things don't work write a paragraph on why things do not work and what you have tried. 
+
+

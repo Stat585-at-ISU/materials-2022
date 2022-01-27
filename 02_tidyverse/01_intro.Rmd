@@ -26,6 +26,7 @@ library(tidyverse)
 ```{r}
 tidyverse::tidyverse_packages()
 ```
+- https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html
 
 - share common data representations and API, i.e. work well together
 
