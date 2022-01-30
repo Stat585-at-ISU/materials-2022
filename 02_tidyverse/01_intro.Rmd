@@ -512,8 +512,8 @@ wkd_weather_cites %>%
 ```
 
 ---
-class:center
+<!-- class:center -->
 
-![:scale 100%](01_intro_files/figure-html/yourturn-wkd-drugs-weather-1.png)
+![Pic:scale 100%](01_intro_files/figure-html/yourturn-wkd-drugs-weather-1.png)
 
 

@@ -166,7 +166,7 @@ pd  %&gt;% count(Classification, sort = TRUE) %&gt;% head()
 ```
 
 ```
-## # A tibble: 6 × 2
+## # A tibble: 6 x 2
 ##   Classification                  n
 ##   &lt;chr&gt;                       &lt;int&gt;
 ## 1 Theft                         400
@@ -188,7 +188,7 @@ pd  %&gt;% count(Classification, sort = TRUE) %&gt;% tail()
 ```
 
 ```
-## # A tibble: 6 × 2
+## # A tibble: 6 x 2
 ##   Classification                                     n
 ##   &lt;chr&gt;                                          &lt;int&gt;
 ## 1 Trespass                                           1
@@ -214,7 +214,7 @@ pd  %&gt;% count(Main, sort = TRUE) %&gt;% head()
 ```
 
 ```
-## # A tibble: 6 × 2
+## # A tibble: 6 x 2
 ##   Main                            n
 ##   &lt;chr&gt;                       &lt;int&gt;
 ## 1 Theft                         401
@@ -286,7 +286,7 @@ pd %&gt;%
 ```
 
 ```
-## # A tibble: 10 × 2
+## # A tibble: 10 x 2
 ##    day            n
 ##    &lt;date&gt;     &lt;int&gt;
 ##  1 2018-08-18    46
@@ -381,21 +381,21 @@ pd %&gt;%
 ```
 
 ```
-## # A tibble: 2,297 × 10
-##    day        `Case Number` Classification         Main        `Date/Time Repor…
-##    &lt;date&gt;     &lt;chr&gt;         &lt;chr&gt;                  &lt;chr&gt;       &lt;chr&gt;            
-##  1 2017-01-01 17-000001     Drug Violation         Drug Viola… 01/01/17 1643    
-##  2 2017-01-01 17-000002     Drug Violation         Drug Viola… 01/01/17 2107    
-##  3 2017-01-02 17-000003     Drug Violation/Drivin… Drug Viola… 01/02/17 0257    
-##  4 2017-01-03 &lt;NA&gt;          &lt;NA&gt;                   &lt;NA&gt;        &lt;NA&gt;             
-##  5 2017-01-04 &lt;NA&gt;          &lt;NA&gt;                   &lt;NA&gt;        &lt;NA&gt;             
-##  6 2017-01-05 &lt;NA&gt;          &lt;NA&gt;                   &lt;NA&gt;        &lt;NA&gt;             
-##  7 2017-01-06 17-000008     Drug Violation         Drug Viola… 01/06/17 1358    
-##  8 2017-01-07 17-000010     Public Intoxication/I… Public Int… 01/07/17 0107    
-##  9 2017-01-07 17-000011     Alcohol Violation      Alcohol Vi… 01/07/17 2131    
-## 10 2017-01-08 17-000012     Drug Violation         Drug Viola… 01/08/17 0048    
-## # … with 2,287 more rows, and 5 more variables: Earliest Occurrence &lt;chr&gt;,
-## #   Latest Occurrence &lt;chr&gt;, General Location &lt;chr&gt;, Disposition &lt;chr&gt;,
+## # A tibble: 2,297 x 10
+##    day        `Case Number` Classification                Main  `Date/Time Rep~`
+##    &lt;date&gt;     &lt;chr&gt;         &lt;chr&gt;                         &lt;chr&gt; &lt;chr&gt;           
+##  1 2017-01-01 17-000001     Drug Violation                Drug~ 01/01/17 1643   
+##  2 2017-01-01 17-000002     Drug Violation                Drug~ 01/01/17 2107   
+##  3 2017-01-02 17-000003     Drug Violation/Driving Viola~ Drug~ 01/02/17 0257   
+##  4 2017-01-03 &lt;NA&gt;          &lt;NA&gt;                          &lt;NA&gt;  &lt;NA&gt;            
+##  5 2017-01-04 &lt;NA&gt;          &lt;NA&gt;                          &lt;NA&gt;  &lt;NA&gt;            
+##  6 2017-01-05 &lt;NA&gt;          &lt;NA&gt;                          &lt;NA&gt;  &lt;NA&gt;            
+##  7 2017-01-06 17-000008     Drug Violation                Drug~ 01/06/17 1358   
+##  8 2017-01-07 17-000010     Public Intoxication/Interfer~ Publ~ 01/07/17 0107   
+##  9 2017-01-07 17-000011     Alcohol Violation             Alco~ 01/07/17 2131   
+## 10 2017-01-08 17-000012     Drug Violation                Drug~ 01/08/17 0048   
+## # ... with 2,287 more rows, and 5 more variables: `Earliest Occurrence` &lt;chr&gt;,
+## #   `Latest Occurrence` &lt;chr&gt;, `General Location` &lt;chr&gt;, Disposition &lt;chr&gt;,
 ## #   date &lt;dttm&gt;
 ```
 
@@ -588,7 +588,8 @@ drug_alcohol_daily &lt;- pd %&gt;%
 ```
 
 ```
-## `summarise()` has grouped output by 'Main'. You can override using the `.groups` argument.
+## `summarise()` has grouped output by 'Main'. You can override using the `.groups`
+## argument.
 ```
 
 ---
@@ -629,9 +630,9 @@ wkd_weather_cites %&gt;%
 ```
 
 ---
-class:center
+&lt;!-- class:center --&gt;
 
-![:scale 100%](01_intro_files/figure-html/yourturn-wkd-drugs-weather-1.png)
+![Pic:scale 100%](01_intro_files/figure-html/yourturn-wkd-drugs-weather-1.png)
 
 
     </textarea>
