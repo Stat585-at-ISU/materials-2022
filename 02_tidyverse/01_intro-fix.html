@@ -47,7 +47,7 @@ tidyverse::tidyverse_packages()
 
 - see https://github.com/hadley/tidyverse for more information: [R for Data Science](https://r4ds.had.co.nz/)
 
-- run  `tidyverse::tidyverse_update()` to check if/which for updates
+- run  `tidyverse::tidyverse_update()` to check for updates
 
 ---
 
@@ -91,7 +91,94 @@ Consequences:
 - read `%&gt;%` as "then do"
 
 
+---
 
+## dplyr 
+
+There are five primary `dplyr` *verbs*, representing distinct data analysis tasks:
+
+- **Filter**: Select specified rows of a data frame, produce subsets
+
+- **Arrange**: Reorder the rows of a data frame
+
+- **Select**: Select particular columns of a data frame
+
+- **Mutate**: Add new or change existing columns of the data frame (as functions of existing columns)
+
+- **Summarise**: Create collapsed summaries of a data frame
+
+- (**Group By**: Introduce structure to a data frame)
+
+&lt;br&gt;
+
+`dplyr` resources:
+
+- https://dplyr.tidyverse.org/
+
+- R for Data Science book: https://r4ds.had.co.nz/transform.html
+
+---
+class: inverse
+## Your Turn
+
+The Iowa State Police Department publishes a Daily Crime Log at https://www.police.iastate.edu/crime-log/
+
+Data for 2017 and most of 2018 are available as file [pd-isu.csv](https://raw.githubusercontent.com/Stat585-at-ISU/materials-2019/master/data/isu-pd.csv) from the course website.
+
+Read the data into your R session and answer the following questions:
+
+- which types of crimes (`Classification`) are typically committed? How many different classifications are there?
+
+- which days are in the top ten for 2018? (Use the `lubridate` package to get to date variables)
+
+- how many times a day are crimes typically reported? 
+
+- what else do you find?
+
+---
+class: middle, center
+## 
+
+&lt;img src = "https://imgs.xkcd.com/comics/tasks_2x.png" height = 300&gt;
+
+Don't peek unless you have tried for yourself!
+
+---
+
+# a solution 
+
+
+```r
+library(tidyverse)
+pd &lt;- read_csv("../data/isu-pd.csv")
+
+pd %&gt;% count(Classification) %&gt;% dim()
+```
+
+```
+## [1] 147   2
+```
+
+```r
+# 147 different types of crime classifications
+
+pd  %&gt;% count(Classification, sort = TRUE) %&gt;% head()
+```
+
+```
+## # A tibble: 6 × 2
+##   Classification                  n
+##   &lt;chr&gt;                       &lt;int&gt;
+## 1 Theft                         400
+## 2 Alcohol Violation             341
+## 3 Public Intoxication           245
+## 4 Drug Violation                231
+## 5 Operating while Intoxicated   145
+## 6 Harassment                    124
+```
+
+
+---
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
