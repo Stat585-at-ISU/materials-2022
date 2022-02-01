@@ -49,6 +49,49 @@ tidyverse::tidyverse_packages()
 
 - run  `tidyverse::tidyverse_update()` to check if/which for updates
 
+---
+
+## Graphical and numerical summaries
+
+
+1. graphical summaries - visualizations with `ggplot2`:
+
+    - [RStudio cheatsheet for ggplot2](hhttps://raw.githubusercontent.com/rstudio/cheatsheets/main/data-visualization.pdf)
+    
+    - online documentation: https://ggplot2.tidyverse.org/
+    
+    - Google group: https://groups.google.com/forum/#!forum/ggplot2
+  
+2. numerical summaries - elements of `dplyr` and `tidyr`
+
+  - assessing data quality; data wrangling
+
+  - [RStudio cheatsheet for dplyr](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-transformation.pdf)
+  - [RStudio cheatsheet for tidyr](https://raw.githubusercontent.com/rstudio/cheatsheets/main/tidyr.pdf)
+  
+---
+
+## The pipe operator `%&gt;%`
+
+`f(x) %&gt;% g(y)` is equivalent to `g(f(x), y)`
+
+i.e. the output of one function is used as input to the next function. This function can be the identity
+
+Consequences:
+
+- `x %&gt;% f(y)` is the same as `f(x, y)`
+
+- statements of the form `k(h(g(f(x, y), z), u), v, w)` become
+`x %&gt;% 
+   f(y) %&gt;% 
+   g(z) %&gt;% 
+   h(u) %&gt;% 
+   k(v, w)`
+
+- read `%&gt;%` as "then do"
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
