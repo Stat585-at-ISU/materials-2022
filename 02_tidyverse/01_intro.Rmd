@@ -32,7 +32,7 @@ tidyverse::tidyverse_packages()
 
 - see https://github.com/hadley/tidyverse for more information: [R for Data Science](https://r4ds.had.co.nz/)
 
-- run the command `tidyverse::tidyverse_update()` to check if/which of your packages need updating
+- run  `tidyverse::tidyverse_update()` to check if/which for updates
 
 ---
 
