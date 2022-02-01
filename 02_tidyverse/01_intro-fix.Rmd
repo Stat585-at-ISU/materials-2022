@@ -1,0 +1,36 @@
+---
+title: "Stat 585 - elements of the tidyverse"
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs    
+    css: [default, default-fonts, "tweaks.css"]
+    nature:
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## tidyverse
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(dpi = 300)
+library(tidyverse)
+```
+
+
+`tidyverse` is an 'opinionated' package bundling several other R packages for data science tasks:
+
+```{r}
+tidyverse::tidyverse_packages()
+```
+- https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html
+
+- share common data representations and API, i.e. work well together
+
+- see https://github.com/hadley/tidyverse for more information: [R for Data Science](https://r4ds.had.co.nz/)
+
+- run  `tidyverse::tidyverse_update()` to check if/which for updates
+
