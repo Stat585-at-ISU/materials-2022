@@ -179,6 +179,128 @@ pd  %&gt;% count(Classification, sort = TRUE) %&gt;% head()
 
 
 ---
+
+Let's check the back, too
+
+
+```r
+pd  %&gt;% count(Classification, sort = TRUE) %&gt;% tail()
+```
+
+```
+## # A tibble: 6 × 2
+##   Classification                                     n
+##   &lt;chr&gt;                                          &lt;int&gt;
+## 1 Trespass                                           1
+## 2 Vandalism / Disorderly Conduct                     1
+## 3 Vandalism / Public Intoxication                    1
+## 4 Vandalism / Trespass                               1
+## 5 Vandalism/Disorderly Conduct/Criminal Trespass     1
+## 6 Weapons Violation                                  1
+```
+---
+
+# break multiple citings into Main and rest
+
+
+```r
+pd &lt;- pd %&gt;% separate(Classification, into = "Main", sep="/",
+                      remove = FALSE) %&gt;%
+  mutate(
+    Main = trimws(Main)
+  )
+
+pd  %&gt;% count(Main, sort = TRUE) %&gt;% head()
+```
+
+```
+## # A tibble: 6 × 2
+##   Main                            n
+##   &lt;chr&gt;                       &lt;int&gt;
+## 1 Theft                         401
+## 2 Alcohol Violation             353
+## 3 Public Intoxication           281
+## 4 Drug Violation                279
+## 5 Operating while Intoxicated   179
+## 6 Harassment                    125
+```
+
+doesn't change much
+
+---
+
+## Top ten bad days in 2018
+
+first get dates, see [RStudio lubridate cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/lubridate.pdf):
+
+```r
+library(lubridate)
+head(pd$`Date/Time Reported`)
+```
+
+```
+## [1] "01/01/17 1643" "01/01/17 2107" "01/02/17 0257" "01/06/17 1358"
+## [5] "01/07/17 0107" "01/07/17 2131"
+```
+
+```r
+pd$date &lt;- lubridate::mdy_hm(pd$`Date/Time Reported`)
+summary(pd$date)
+```
+
+```
+##                  Min.               1st Qu.                Median 
+## "2017-01-01 16:43:00" "2017-08-08 05:39:00" "2017-10-28 12:47:30" 
+##                  Mean               3rd Qu.                  Max. 
+## "2017-12-07 17:29:53" "2018-05-04 11:09:00" "2019-01-05 22:12:00"
+```
+
+---
+
+## Top ten bad days in 2018 (2)
+
+Now we want to just have the day rather than the time
+
+
+```r
+pd$day &lt;- lubridate::as_date(pd$date)
+head(pd$day)
+```
+
+```
+## [1] "2017-01-01" "2017-01-01" "2017-01-02" "2017-01-06" "2017-01-07"
+## [6] "2017-01-07"
+```
+
+
+---
+
+## Top ten bad days in 2018 (3)
+
+
+```r
+pd %&gt;% 
+  count(day, sort = TRUE) %&gt;% 
+  filter(lubridate::year(day) == 2018) %&gt;%
+  head(10)
+```
+
+```
+## # A tibble: 10 × 2
+##    day            n
+##    &lt;date&gt;     &lt;int&gt;
+##  1 2018-08-18    46
+##  2 2018-09-01    38
+##  3 2018-09-22    24
+##  4 2018-09-15    17
+##  5 2018-04-22    12
+##  6 2018-11-24    12
+##  7 2018-01-29     8
+##  8 2018-08-30     8
+##  9 2018-09-28     8
+## 10 2018-01-20     7
+```
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

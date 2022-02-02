@@ -145,3 +145,62 @@ pd  %>% count(Classification, sort = TRUE) %>% head()
 
 
 ---
+
+Let's check the back, too
+
+```{r}
+pd  %>% count(Classification, sort = TRUE) %>% tail()
+
+```
+---
+
+# break multiple citings into Main and rest
+
+```{r, warning= FALSE, message = FALSE}
+pd <- pd %>% separate(Classification, into = "Main", sep="/",
+                      remove = FALSE) %>%
+  mutate(
+    Main = trimws(Main)
+  )
+
+pd  %>% count(Main, sort = TRUE) %>% head()
+```
+
+doesn't change much
+
+---
+
+## Top ten bad days in 2018
+
+first get dates, see [RStudio lubridate cheat sheet](https://github.com/rstudio/cheatsheets/raw/master/lubridate.pdf):
+```{r message = FALSE}
+library(lubridate)
+head(pd$`Date/Time Reported`)
+
+pd$date <- lubridate::mdy_hm(pd$`Date/Time Reported`)
+summary(pd$date)
+```
+
+---
+
+## Top ten bad days in 2018 (2)
+
+Now we want to just have the day rather than the time
+
+```{r}
+pd$day <- lubridate::as_date(pd$date)
+head(pd$day)
+```
+
+
+---
+
+## Top ten bad days in 2018 (3)
+
+```{r}
+pd %>% 
+  count(day, sort = TRUE) %>% 
+  filter(lubridate::year(day) == 2018) %>%
+  head(10)
+```
+
