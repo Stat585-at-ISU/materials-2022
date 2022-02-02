@@ -343,3 +343,171 @@ perday %>%
 ```
 
 Don't forget to *look at* the chart. What are your main findings?
+
+
+---
+
+```{r}
+# read in schedules and clean up dates
+schedule <- read.csv("../data/isu-football-2018.csv")
+schedule <- schedule %>%
+  mutate(
+    date = lubridate::ymd("2018-01-01")
+    )
+lubridate::month(schedule$date) <- as.numeric(factor(schedule$Month, levels=c("Sep", "Oct", "Nov", "Dec"))) + 8
+lubridate::mday(schedule$date) <- schedule$Day
+schedule$yday <- lubridate::yday(schedule$date)
+schedule$year <- lubridate::year(schedule$date)
+
+
+schedule17 <- read.csv("../data/isu-football-2017.csv")
+schedule17 <- schedule17 %>%
+  mutate(
+    date = lubridate::mdy(Date)
+  )
+schedule17$yday <- lubridate::yday(schedule17$date)
+schedule17$year <- lubridate::year(schedule17$date)
+```
+
+---
+
+```{r, fig.height = 4, fig.width = 8}
+perday %>%
+  mutate(
+    year = lubridate::year(day),
+    yday = lubridate::yday(day)
+    ) %>%
+  filter(year <= 2018) %>%
+  ggplot(aes(x = yday, y = n)) +
+  geom_vline(data = schedule, aes(xintercept = yday, colour = home)) +
+  geom_vline(data = schedule17, aes(xintercept = yday, colour = Home)) +
+  geom_point(size = .75) +
+  facet_grid(year~.) +
+  theme_bw() +
+  ylab("Number of police reports") +
+  xlab("Day of the year")
+```
+
+
+---
+# Strange findings
+
+```{r, echo = FALSE, fig.height = 4, fig.width = 8}
+perday %>%
+  mutate(
+    year = lubridate::year(day),
+    yday = lubridate::yday(day)
+    ) %>%
+  filter(year <= 2018) %>%
+  ggplot(aes(x = yday, y = n)) +
+  geom_vline(data = schedule, aes(xintercept = yday, colour = home)) +
+  geom_vline(data = schedule17, aes(xintercept = yday, colour = Home)) +
+  geom_point(size = .75) +
+  facet_grid(year~.) +
+  theme_bw() +
+  ylab("Number of police reports") +
+  xlab("Day of the year")
+```
+
+- one large outlier not related to football games in Ames
+- one game at home not resulting in large number of crime logs? (Kansas - ISU 0 - 45)
+- range of two weeks in October 2018 with no crimes logged
+
+---
+
+## Tools for working with data
+
+- moving between wide and long forms of data:
+
+    - `pivot_longer` (formerly `gather`)
+    
+    - `pivot_wider` (formerly `spread`) 
+    
+    - see https://r4ds.had.co.nz/tidy-data.html
+
+
+- joining data sets: `left_join`, `anti_join`, see also https://r4ds.had.co.nz/relational-data.html
+
+
+---
+class: inverse
+## Your turn
+
+Does the weather affect the number of citations for drug and alcohol-related offenses? 
+
+Use  [Ames_weather_2017-2018.csv](https://raw.githubusercontent.com/Stat585-at-ISU/materials-2019/master/data/Ames_weather_2017-2018.csv) and combine the data with relevant Ames PD data. 
+
+Graphically examine the relationship between temperature and number of citations. You may find it helpful to only consider Thursday - Saturday.
+
+```{r, message = FALSE}
+ames_weather <- read_csv("../data/Ames_weather_2017-2018.csv") %>%
+  filter(!is.na(time))
+
+# summarize by day to get daily highs and lows
+ames_weather_daily <- ames_weather %>%
+  mutate(day = as.Date(date)) %>%
+  group_by(day) %>%
+  summarize(temp_low = min(temp_low), temp_high = max(temp_high))
+
+```
+
+.small[For the curious: [script to get the weather data](https://gist.github.com/srvanderplas/9f4a471e0fb19495935fb2104f3ba9f8)]
+
+```{r include = F, echo = FALSE, message = FALSE}
+library(lubridate)
+
+# Just checking for weirdness
+ggplot(data = ames_weather_daily) + 
+  geom_ribbon(aes(x = day, ymin = temp_low, ymax = temp_high))
+
+# seems OK
+```
+---
+class: middle,center
+
+... only after you tried ...
+
+---
+
+```{r}
+library(lubridate)
+substitutions <- c("P[uU]blic Intox.*" = "PublicIntox",
+                   "Drug Violation" = "Drug",
+                   "Alcohol Violation" = "Alcohol",
+                   "Operating [wW]hile Intoxicated" = "OWI")
+
+# Get relevant Ames PD data
+drug_alcohol_daily <- pd %>%
+  filter(str_detect(Main, "Alcohol|Drug|Intox")) %>%
+  mutate(Main = str_replace_all(Main, substitutions)) %>%
+  mutate(day = floor_date(date, unit = "day") %>% as.Date()) %>%
+  group_by(Main, day) %>%
+  summarize(n = n()) %>%
+  complete(day = full_seq(.$day, period = 1), fill = list(n = 0))
+```
+
+---
+
+```{r yourturn-wkd-drugs-weather, fig.show='hide', fig.width = 8, fig.height = 6}
+game_days <- unique(c(schedule$date, schedule17$date))
+
+# Combine the data with weather data
+wkd_weather_cites <- drug_alcohol_daily %>%
+  left_join(ames_weather_daily) %>% 
+  mutate(wday = wday(day, label = T)) %>%
+  # Show game days
+  mutate(gameday = day %in% game_days) %>%
+  filter(wday %in% c("Thurs", "Fri", "Sat"))
+
+# Plot
+wkd_weather_cites %>%
+  ggplot(aes(x = temp_low, y = n)) + 
+  # Jitter in y a bit so points don't overlap as much
+  geom_jitter(aes(shape = gameday), height = .125) + 
+  geom_smooth(aes(x = temp_low, y = n), method = "lm") + 
+  facet_wrap(~Main, scales = "free_y") + 
+  scale_shape_manual(values = c(1, 2)) + 
+  ggtitle("Weekend Drug/Alcohol Citations and Weather") + 
+  scale_x_continuous("Temperature (deg F)") + 
+  scale_y_continuous("# Citations")
+```
