@@ -1,0 +1,84 @@
+---
+title: 'Announcements'
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, echo = TRUE)
+```
+# Office hours
+
+- We have identified office hours that will work for a majority of everybody
+
+- Tuesday: virtual (same zoom link) 3-4
+- Thursdays: in-person after class 9:30-10:30 in Snedecor 2113
+- or by appointment (calendly link)
+
+---
+
+# Blog 1
+
+- is up! https://stat585-at-isu.github.io/blog-2022/01/
+
+- formatting - something **strange** happened ... and parts of the yaml disappeared
+
+- help me fix it for extra credit :) 
+
+
+---
+
+# yaml
+
+`yet another markup language`
+
+```
+---
+author: "Firstname Lastname"
+title: "Title of your post"
+layout: post
+topic: "01"
+short-topic: Asking good questions
+due-date: 2022-01-27
+root: ../../
+output: github_document
+---
+```
+
+---
+class: inverse
+## Your turn
+
+Navigate to the markdown document with your name in folder 
+https://stat585-at-isu.github.io/blog-2022/01/
+
+Fork the repo to your github site
+
+Adjust the following information 
+
+```
+---
+author: "Firstname Lastname"
+title: "Title of your post"
+layout: post
+topic: "01"
+short-topic: Asking good questions
+due-date: 2022-01-27
+root: ../../
+output: github_document
+---
+``` 
+
+Save (Commit) - and start a pull request.
+
+---
+
+# Blog 3 
+
+is up - github classroom link is in Canvas
+
