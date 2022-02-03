@@ -1,0 +1,80 @@
+---
+title: 'Lab Assignment #1 - Recap'
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, echo = TRUE)
+```
+# How did it go?
+
+Mostly pretty well from what we have seen
+
+---
+class: inverse, middle
+# Reproducibility
+
+---
+
+# Issues with building the book
+
+0. Old R versions 
+
+1. Tons of packages to install
+
+    Some kind soul `r emo::ji("pray")` `r emo::ji("pray")` `r emo::ji("pray")` has written a [script](Libraryscrapping.R) that allows to install all necessary libraries needed in a folder. 
+
+2. Some issue with the availability of a C compiler. Particularly on Windows machines it is not easy to navigate through the necessary tools to compile a package from source. 
+
+    "Fixes" to this problem is to set the code chunk option `error` to `TRUE` - this will not stop the evaluation, even if an error occurs
+
+    Alternatively, we can comment out pieces in the code that cause an error. 
+
+---
+
+# Issues with building the book
+
+3. Missing fonts
+
+    Particularly Inconsolata was missing for a lot of people. Installation of fonts is platform-dependent - solutions are in the Q&A forum
+
+Overall: 
+
+Thanks everybody for contributing to the Q&A section! I love giving out extra credit points! So far we are at around 15 pts. I'll bring candy every time you get to 100 points.
+
+
+---
+class: inverse, middle
+# Weather stations
+
+---
+
+## Issues
+
+Make sure to automate everything! Function `download.file` will come in handy in the future :)
+
+`UTC_offset` is the variable containing the time zones - if you use that variable, the problem is much simpler. 
+It was not my intent to mislead you. 
+
+
+What does this command do?
+
+`weather%>%filter(grepl("AMES", weather$NAME))`
+
+
+---
+
+## Next Lab
+
+
+Well done! 
+
+The next lab is scheduled for Feb 10 (next week Thursday)
+
+We will cover lists and functions in a spatial setting
