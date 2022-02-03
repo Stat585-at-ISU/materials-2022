@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stat 585 - Reading files</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Heike Hofmann" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="tweaks.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Stat 585 - Reading files
+### Heike Hofmann
+
+---
+
+
+# Text files versus binary files
+
+- text files are all formats that are humanly readable, i.e. we can open the files in a text editor and read the contents
+
+- binary files encode contents in a machine readable form
+
+- What are the pros and cons?
+
+---
+
+# nasa data - binary file
+
+![](images/nasa-binary.png)
+
+---
+
+# nasa data - text file
+
+![](images/nasa-text.png)
+
+---
+
+# Text files and R
+
+- base R supports reading text files, e.g. `read.table(), read.csv(), read.delim()` reads data from  text files files with specified delimiters 
+
+- `write.table()` writes  text files files
+
+- the `readr` package provides similar functionality: `read_csv, read_tsv, read_delim`
+
+- `readr` functions are faster than base R functions, if the whole file is being read at once
+
+- all of the text files have to be highly structured to be readable
+
+
+---
+
+## Binary files and R
+
+- `saveRDS()` saves a single R object in binary format, use extension `.rds`
+
+- `readRDS()` reads R binary file
+
+- `save()` saves all objects in a binary file (and keeps their names), use extension `.rda` 
+
+- `load()` retrieves these objects (using the same names)
+
+---
+
+## Example
+
+
+```r
+system.time(d1 &lt;- read.csv("../data/nasadata.csv"))
+```
+
+```
+##    user  system elapsed 
+##   0.200   0.004   0.205
+```
+
+```r
+system.time(d2 &lt;- readRDS("../data/nasadata.rds"))
+```
+
+```
+##    user  system elapsed 
+##   0.033   0.000   0.033
+```
+
+speed-up is about factor 10 in favor of binary files
+
+
+---
+
+# Binary file formats
+
+- No restriction in terms on content, streams of bytes
+
+- Advantage: Generally much smaller files, and with compression even smaller, e.g. `nasadata.csv` is 3.7Mb, `nasadata.rds` is 288kb
+
+- Disadvantage:  
+
+    - introduce a dependency on software (what if in a future version of the software our old binary file cannot be read anymore?) 
+    - potential of dependency on operating system
+    - file corruption is not recoverable
+
+---
+
+# Text file formats
+
+- humanly readable does not necessarily mean well-structured or nicely readable
+
+- in R we are often dealing with csv, i.e. column separated values
+
+- sometimes we deal with tsv (separated by tabulator)
+
+- we will look at a few different file formats
+
+---
+
+# JSON
+
+- JSON is short for JavaScript  Object Notation (http://json.org/) 
+
+- it is a lightweight data interchange format, becoming increasingly popular
+
+- Human readable and writable
+
+- Utilized by many web APIs, e.g. tumblr, twitter, ... 
+
+
+---
+
+# JSON - example 
+
+e.g. result from get query in JSON format:
+
+```
+ [{"P0010001":710231,"NAME":"Alaska","state":"02"},
+ {"P0010001":4779736,"NAME":"Alabama","state":"01"},
+ {"P0010001":2915918,"NAME":"Arkansas","state":"05"},
+ {"P0010001":6392017,"NAME":"Arizona","state":"04"},
+ {"P0010001":37253956,"NAME":"California","state":"06"}]
+```
+
+i.e. vector of key-value format - focus is on individual rows in a data set, whereas R puts emphasis on individual columns (data set is list of vectors).
+
+advantage: enables streaming data, i.e new observations can easily be added as they become available
+
+disadvantage: operations across observations are tricky
+
+---
+class: inverse
+# Your Turn
+
+The package `jsonlite` (part of the `tidyverse`) has functions `toJSON` and `fromJSON` to transform between JSON data and R objects. 
+
+- convert the first three observations from data `mtcars` into JSON format (use `pretty = TRUE` to make things readable)
+
+- copy the five lines from the previous slides into a character object. Use `fromJSON` to create an R object from it. What object do you get?
+
+---
+class: inverse
+# Your Turn - Hard
+
+The Census Bureau provides access to some of its data through an API, which returns json (like) data.
+
+The call `https://api.census.gov/data/2010/surname?get=NAME,COUNT&amp;RANK=1:100` returns values for surname and counts for the top 100 rank surnames of the 2010 surname table.
+
+```
+[["NAME","COUNT","RANK"],
+["ADAMS","427865","42"],
+["ALLEN","482607","33"],
+["ALVAREZ","233983","92"],
+["ANDERSON","784404","15"],
+["BAILEY","277845","72"],
+["BAKER","419586","44"],
+...
+]
+```
+
+Change the above call to include additional data on demographics (see [variables for surname data](https://api.census.gov/data/2010/surname/variables.html)) and read it into your R session.  
+
+Is your last name included? At what rank? what is the change in rank since 2000?
+
+---
+
+
+```r
+jsonlite::toJSON(mtcars[1:2,], pretty=TRUE)
+```
+
+```
+## [
+##   {
+##     "mpg": 21,
+##     "cyl": 6,
+##     "disp": 160,
+##     "hp": 110,
+##     "drat": 3.9,
+##     "wt": 2.62,
+##     "qsec": 16.46,
+##     "vs": 0,
+##     "am": 1,
+##     "gear": 4,
+##     "carb": 4,
+##     "_row": "Mazda RX4"
+##   },
+##   {
+##     "mpg": 21,
+##     "cyl": 6,
+##     "disp": 160,
+##     "hp": 110,
+##     "drat": 3.9,
+##     "wt": 2.875,
+##     "qsec": 17.02,
+##     "vs": 0,
+##     "am": 1,
+##     "gear": 4,
+##     "carb": 4,
+##     "_row": "Mazda RX4 Wag"
+##   }
+## ]
+```
+
+---
+
+
+```r
+char &lt;- '[{"P0010001":710231,"NAME":"Alaska","state":"02"},
+ {"P0010001":4779736,"NAME":"Alabama","state":"01"},
+ {"P0010001":2915918,"NAME":"Arkansas","state":"05"},
+ {"P0010001":6392017,"NAME":"Arizona","state":"04"},
+ {"P0010001":37253956,"NAME":"California","state":"06"}]'
+
+str(jsonlite::fromJSON(char))
+```
+
+```
+## 'data.frame':	5 obs. of  3 variables:
+##  $ P0010001: int  710231 4779736 2915918 6392017 37253956
+##  $ NAME    : chr  "Alaska" "Alabama" "Arkansas" "Arizona" ...
+##  $ state   : chr  "02" "01" "05" "04" ...
+```
+---
+
+
+```r
+query &lt;- "https://api.census.gov/data/2010/surname?get=NAME,COUNT,PCTWHITE,PCTBLACK,PCTHISPANIC&amp;RANK=1:100"
+
+surnames &lt;- jsonlite::fromJSON(query)
+
+head(surnames, 10)
+```
+
+```
+##       [,1]        [,2]      [,3]       [,4]       [,5]          [,6]  
+##  [1,] "NAME"      "COUNT"   "PCTWHITE" "PCTBLACK" "PCTHISPANIC" "RANK"
+##  [2,] "SMITH"     "2442977" "70.9"     "23.11"    "2.4"         "1"   
+##  [3,] "JOHNSON"   "1932812" "58.97"    "34.63"    "2.36"        "2"   
+##  [4,] "WILLIAMS"  "1625252" "45.75"    "47.68"    "2.49"        "3"   
+##  [5,] "BROWN"     "1437026" "57.95"    "35.6"     "2.52"        "4"   
+##  [6,] "JONES"     "1425470" "55.19"    "38.48"    "2.29"        "5"   
+##  [7,] "GARCIA"    "1166120" "5.38"     "0.45"     "92.03"       "6"   
+##  [8,] "MILLER"    "1161437" "84.11"    "10.76"    "2.17"        "7"   
+##  [9,] "DAVIS"     "1116357" "62.2"     "31.6"     "2.44"        "8"   
+## [10,] "RODRIGUEZ" "1094924" "4.75"     "0.54"     "93.77"       "9"
+```
+
+result is a matrix - it will need some work to turn into a data frame
+---
+
+# Navel gazing
+
+
+```r
+us2010 &lt;- jsonlite::fromJSON("https://api.census.gov/data/2010/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK&amp;NAME=HOFMANN&amp;NAME=VANDERPLAS")
+us2000 &lt;- jsonlite::fromJSON("https://api.census.gov/data/2000/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK&amp;NAME=HOFMANN&amp;NAME=VANDERPLAS")
+
+us2000
+```
+
+```
+##      [,1]         [,2]    [,3]    [,4]       [,5]       [,6]        
+## [1,] "NAME"       "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "NAME"      
+## [2,] "HOFMANN"    "8824"  "3695"  "96.5"     "0.35"     "HOFMANN"   
+## [3,] "VANDERPLAS" "179"   "94676" "96.65"    "0"        "VANDERPLAS"
+```
+
+```r
+us2010
+```
+
+```
+##      [,1]         [,2]    [,3]    [,4]       [,5]       [,6]        
+## [1,] "NAME"       "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "NAME"      
+## [2,] "HOFMANN"    "9192"  "3857"  "95.21"    "0.36"     "HOFMANN"   
+## [3,] "VANDERPLAS" "188"   "96799" "90.43"    "(S)"      "VANDERPLAS"
+```
+
+---
+
+# HTML FILES
+
+- A lot of data is available online in the form of html tables
+
+- Extracting the data requires recognizing the html table format, and stripping off the html
+
+- Packages such as `xml`, `rvest`, ... helps with this
+
+---
+
+# HTML FILES
+
+  Pulling election results off the web...
+
+
+```r
+library(rvest)
+url &lt;- "https://www.nytimes.com/elections/results/iowa-house-district-4"
+doc &lt;- read_html(url)
+tables &lt;- html_table(doc, fill=TRUE)
+head(tables[[2]])
+```
+
+```
+##        County   King Scholten Aldrich Rpt.
+## 1       Story 13,474   27,569   1,178 100%
+## 2    Woodbury 15,708   18,686     562 100%
+## 3 Cerro Gordo  7,620   10,688     410 100%
+## 4       Sioux 10,824    3,682     182 100%
+## 5     Webster  6,706    6,918     277 100%
+## 6       Boone  5,350    6,353     285 100%
+```
+
+
+---
+  
+# Other binary formats and R
+  
+  - Packages `foreign` or `haven`: Data export/import for other (statistical) software: Stata, Epi, Octave, SPSS, Systat, SAS
+
+- Package `readxl` import/export with Excel spreadsheets
+e.g. web index data at http://www.visualizing.org/datasets/web-index-2013
+
+
+---
+  
+# Why do we need to access all these formats? 
+  
+  - To solve a problem, may need to collate data from multiple sources
+
+- Rearranging and merging data from different sources helps to pull together the data necessary to solve the problem
+
+
+&lt;!-- ## "Awkward" text formats and R --&gt;
+
+&lt;!-- The National Climate Data Center at NOAA publishes information on temperature and precipation across a network of stations in the US. --&gt;
+
+&lt;!-- The Data can be accessed through ftp at ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5, a code book with a description of the data structure is available at --&gt;
+&lt;!-- ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/readme.txt --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- temp.all&lt;-readLines("../data/USH00132999.raw.tmax", n = 5) --&gt;
+&lt;!-- temp.all --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ## From the code book --&gt;
+
+&lt;!-- ``` --&gt;
+&lt;!-- 2.2.1 DATA FORMAT --&gt;
+
+&lt;!--           Variable          Columns      Type --&gt;
+&lt;!--           --------          -------      ---- --&gt;
+
+&lt;!--           ID                 1-11        Integer --&gt;
+&lt;!--           YEAR              13-16        Integer --&gt;
+&lt;!--           VALUE1            17-22        Integer --&gt;
+&lt;!--           DMFLAG1           23-23        Character --&gt;
+&lt;!--           QCFLAG1           24-24        Character --&gt;
+&lt;!--           DSFLAG1           25-25        Character --&gt;
+&lt;!--             .                 .             . --&gt;
+&lt;!--             .                 .             . --&gt;
+&lt;!--             .                 .             . --&gt;
+&lt;!--           VALUE12          116-121       Integer --&gt;
+&lt;!--           DMFLAG12         122-122       Character --&gt;
+&lt;!--           QCFLAG12         123-123       Character --&gt;
+&lt;!--           DSFLAG12         124-124       Character --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # Fixed width format --&gt;
+
+&lt;!-- - Fixed formats can be read with `read.fwf()` or `readr::read_fwf()` --&gt;
+
+&lt;!-- - Need to specify column positions: pretty painful to specify --&gt;
+
+&lt;!-- ```{r message=FALSE, warning = FALSE} --&gt;
+&lt;!-- library(tidyverse) --&gt;
+&lt;!-- temps &lt;- read_fwf("../data/USH00132999.raw.tmax", --&gt;
+&lt;!--   col_positions = fwf_positions( --&gt;
+&lt;!--     start=c( 1,13, rep(16+9*0:11, each=4) + c(1,7,8,9)),  --&gt;
+&lt;!--     end  =c(11,16, rep(16+9*0:11, each=4) + c(6,7,8,9)))) --&gt;
+&lt;!-- names(temps) &lt;- c("Station", "Year",  --&gt;
+&lt;!--   paste0(rep(c("Value","DMflag", "QCflag", "DSflag"), 12),  --&gt;
+&lt;!--          rep(1:12, each=4))) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # Fort Dodge temps --&gt;
+
+&lt;!-- ```{r warning = FALSE, message = FALSE, fig.height =4} --&gt;
+&lt;!-- FortDodge &lt;- temps %&gt;%  --&gt;
+&lt;!--   gather(key="Month", value="Temp_Max", starts_with("Value")) --&gt;
+&lt;!-- FortDodge$Month &lt;- as.numeric(gsub("Value", "", FortDodge$Month)) --&gt;
+&lt;!-- FortDodge$Temp_Max &lt;- replace(FortDodge$Temp_Max,  --&gt;
+&lt;!--                               FortDodge$Temp_Max == -9999, NA) --&gt;
+
+&lt;!-- FortDodge %&gt;% filter(Temp_Max &gt; -100) %&gt;% --&gt;
+&lt;!--   ggplot(aes(x = Year, Temp_Max/100)) +  --&gt;
+&lt;!--   geom_point() + facet_wrap(~Month, nrow=2) + geom_smooth(method="lm") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # USHCN network --&gt;
+
+&lt;!--   Parsing the information available in the file `ushcn-v2.5-stations.txt` was part of lab 1. This file is also in fixed width format: --&gt;
+
+&lt;!--   ``` --&gt;
+&lt;!-- ---------------------------------------- --&gt;
+&lt;!--   Variable             Columns    Type --&gt;
+&lt;!-- ---------------------------------------- --&gt;
+&lt;!-- COUNTRY CODE             1-2    Character --&gt;
+&lt;!-- NETWORK CODE               3    Character --&gt;
+&lt;!-- ID PLACEHOLDERS ("00")   4-5    Character --&gt;
+&lt;!-- COOP ID                 6-11    Character --&gt;
+&lt;!-- LATITUDE               13-20    Real --&gt;
+&lt;!-- LONGITUDE              22-30    Real --&gt;
+&lt;!-- ELEVATION              33-37    Real --&gt;
+&lt;!-- STATE                  39-40    Character --&gt;
+&lt;!-- NAME                   42-71    Character --&gt;
+&lt;!-- COMPONENT 1 (COOP ID)  73-78    Character --&gt;
+&lt;!-- COMPONENT 2 (COOP ID)  80-85    Character --&gt;
+&lt;!-- COMPONENT 3 (COOP ID)  87-92    Character --&gt;
+&lt;!-- UTC OFFSET             94-95    Integer --&gt;
+&lt;!-- ----------------------------------------- --&gt;
+&lt;!--   ``` --&gt;
+&lt;!-- --- --&gt;
+
+&lt;!-- ## First look at the data --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- stations&lt;-readLines("https://raw.githubusercontent.com/Stat585-at-ISU/materials/master/data/ushcn-v2.5-stations.txt", n = 5) --&gt;
+&lt;!-- head(stations) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # reading the fixed width format  --&gt;
+
+&lt;!-- ```{r message=FALSE,  warning = FALSE} --&gt;
+&lt;!-- stations &lt;- read_fwf("https://raw.githubusercontent.com/Stat585-at-ISU/materials-2019/master/labs/ushcn-v2.5-stations.txt", --&gt;
+&lt;!--                      col_positions = fwf_positions( --&gt;
+&lt;!--                        start=c(1,3,4,6,13,22,33,39,42,73,80,87,94),  --&gt;
+&lt;!--                        end  =c(2,3,5,11,20,30,37,40,71,78,85,92,95))) --&gt;
+&lt;!-- # check that the formats are correct --&gt;
+&lt;!-- stations %&gt;% glimpse() --&gt;
+
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- # Cleaning the data --&gt;
+
+&lt;!-- We need to get the names in: --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- names(stations) &lt;- c("Country code", "Network code", "ID", "Coop ID", --&gt;
+&lt;!--                      "Latitude", "Longitude", "Elevation", "State", --&gt;
+&lt;!--                      "Name", "Comp1", "Comp2", "Comp3", "UTC offset") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- Which Iowa stations do we have? --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- stations[stations$State == "IA",]$Name --&gt;
+&lt;!-- ```     --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- Now we plot: --&gt;
+
+&lt;!-- ```{r warning = FALSE, message = FALSE, fig.height = 4, fig.width = 8} --&gt;
+&lt;!-- us &lt;- map_data("state") --&gt;
+&lt;!-- stations &lt;- stations %&gt;% mutate( --&gt;
+&lt;!--   Elevation = as.numeric(Elevation) --&gt;
+&lt;!-- ) --&gt;
+&lt;!-- stations %&gt;% ggplot(aes(x = Longitude, y = Latitude)) + --&gt;
+&lt;!--   geom_path(aes(x = long, y = lat, group = group), data = us) + --&gt;
+&lt;!--   geom_point(aes(size = Elevation, colour = factor(`UTC offset`)), alpha = 0.5) + --&gt;
+&lt;!--   scale_size(range=c(0.5, 3.5)) + --&gt;
+&lt;!--   theme_bw() + --&gt;
+&lt;!--   scale_color_brewer(palette="Paired") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- There are some stations with wrong(?) UTC offsets  --&gt;
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
