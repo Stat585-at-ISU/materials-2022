@@ -15,8 +15,22 @@ output:
 
 The National Climate Data Center at NOAA publishes information on temperature and precipation across a network of stations in the US.
 
-The Data can be accessed through ftp at ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5, a code book with a description of the data structure is available at
-ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/readme.txt
+The Data can be accessed through https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/, a code book with a description of the data structure is available at
+https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/readme.txt
+
+```{r}
+download.file(
+  url = "https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/ushcn.tmax.latest.raw.tar.gz", 
+  destfile = "ushcn.tar.gz",
+  mode = "wb") # mode 'wb' needed for Windows
+
+untar("ushcn.tar.gz") # unzips to folder 
+dir(pattern="^us*")
+
+system("mv ushcn.v2.5.5.* ../data/ushcn") # move folder to data folder, rename to ushcn
+```
+
+---
 
 ```{r}
 temp.all<-readLines("../data/USH00132999.raw.tmax", n = 5)
@@ -73,13 +87,23 @@ names(temps) <- c("Station", "Year",
 # Fort Dodge temps
 
 ```{r warning = FALSE, message = FALSE, fig.height =4}
-FortDodge <- temps %>%
-  gather(key="Month", value="Temp_Max", starts_with("Value"))
-FortDodge$Month <- as.numeric(gsub("Value", "", FortDodge$Month))
-FortDodge$Temp_Max <- replace(FortDodge$Temp_Max,
-                              FortDodge$Temp_Max == -9999, NA)
+FortDodge <- temps %>% select(-contains("flag")) %>% # remove flags just for now
+  pivot_longer(names_to="Month", values_to="Temp_Max", cols=starts_with("Value"))
 
-FortDodge %>% filter(Temp_Max > -100) %>%
+# now do some cleaning
+FortDodge <- FortDodge %>% mutate(
+  Month = as.numeric(gsub("Value", "", Month)), # ditch the 'Value' in front of the number
+  Temp_Max = ifelse(Temp_Max == -9999, NA, Temp_Max)  # the -9999 encode missing values
+)
+
+FortDodge %>% head()
+```
+
+---
+  
+```{r, warning = FALSE, message = FALSE}
+FortDodge %>% 
+  filter(Year >= 1899) %>%
   ggplot(aes(x = Year, Temp_Max/100)) +
   geom_point() + facet_wrap(~Month, nrow=2) + geom_smooth(method="lm")
 ```

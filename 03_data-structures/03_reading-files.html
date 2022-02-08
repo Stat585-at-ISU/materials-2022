@@ -23,8 +23,29 @@ class: center, middle, inverse, title-slide
 
 The National Climate Data Center at NOAA publishes information on temperature and precipation across a network of stations in the US.
 
-The Data can be accessed through ftp at ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5, a code book with a description of the data structure is available at
-ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/readme.txt
+The Data can be accessed through https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/, a code book with a description of the data structure is available at
+https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/readme.txt
+
+
+```r
+download.file(
+  url = "https://www.ncei.noaa.gov/pub/data/ushcn/v2.5/ushcn.tmax.latest.raw.tar.gz", 
+  destfile = "ushcn.tar.gz",
+  mode = "wb") # mode 'wb' needed for Windows
+
+untar("ushcn.tar.gz") # unzips to folder 
+dir(pattern="^us*")
+```
+
+```
+## [1] "ushcn.tar.gz"          "ushcn.v2.5.5.20220207"
+```
+
+```r
+system("mv ushcn.v2.5.5.* ../data/ushcn") # move folder to data folder, rename to ushcn
+```
+
+---
 
 
 ```r
@@ -33,11 +54,11 @@ temp.all
 ```
 
 ```
-## [1] "USH00132999 1899 -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999      -62f  "
-## [2] "USH00132999 1900 -9999     -427b     482e    1854a    2468     2815     2879b    3151     2416a    2229      563      205   "
-## [3] "USH00132999 1901   222a    -191      646     1673     2337     2909     3624     3137     2444     1887      863     -160   "
-## [4] "USH00132999 1902    77     -262     1026a    1636     2434     2584h    2895a    2620     2231a   -9999    -9999    -9999   "
-## [5] "USH00132999 1903 -9999     -128b   -9999    -9999     2117d    2289b    2687f    2582     2266f    1834a     648       -7   "
+## [1] "USH00132999 1795 -9999     -416d   -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999   "
+## [2] "USH00132999 1899 -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999    -9999      -62f  "
+## [3] "USH00132999 1900 -9999     -427b     482e    1854a    2468     2815     2879b    3151     2416a    2229      563      205   "
+## [4] "USH00132999 1901   222a    -191      646     1673     2337     2909     3624     3137     2444     1887      863     -160   "
+## [5] "USH00132999 1902    77     -262     1026a    1636     2434     2584h    2895a    2620     2231a   -9999    -9999    -9999   "
 ```
 
 ---
@@ -92,18 +113,41 @@ names(temps) &lt;- c("Station", "Year",
 
 
 ```r
-FortDodge &lt;- temps %&gt;%
-  gather(key="Month", value="Temp_Max", starts_with("Value"))
-FortDodge$Month &lt;- as.numeric(gsub("Value", "", FortDodge$Month))
-FortDodge$Temp_Max &lt;- replace(FortDodge$Temp_Max,
-                              FortDodge$Temp_Max == -9999, NA)
+FortDodge &lt;- temps %&gt;% select(-contains("flag")) %&gt;% # remove flags just for now
+  pivot_longer(names_to="Month", values_to="Temp_Max", cols=starts_with("Value"))
 
-FortDodge %&gt;% filter(Temp_Max &gt; -100) %&gt;%
+# now do some cleaning
+FortDodge &lt;- FortDodge %&gt;% mutate(
+  Month = as.numeric(gsub("Value", "", Month)), # ditch the 'Value' in front of the number
+  Temp_Max = ifelse(Temp_Max == -9999, NA, Temp_Max)  # the -9999 encode missing values
+)
+
+FortDodge %&gt;% head()
+```
+
+```
+## # A tibble: 6 × 4
+##   Station      Year Month Temp_Max
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+## 1 USH00132999  1795     1       NA
+## 2 USH00132999  1795     2     -416
+## 3 USH00132999  1795     3       NA
+## 4 USH00132999  1795     4       NA
+## 5 USH00132999  1795     5       NA
+## 6 USH00132999  1795     6       NA
+```
+
+---
+  
+
+```r
+FortDodge %&gt;% 
+  filter(Year &gt;= 1899) %&gt;%
   ggplot(aes(x = Year, Temp_Max/100)) +
   geom_point() + facet_wrap(~Month, nrow=2) + geom_smooth(method="lm")
 ```
 
-![](03_reading-files_files/figure-html/unnamed-chunk-3-1.png)&lt;!-- --&gt;
+![](03_reading-files_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -229,7 +273,7 @@ stations %&gt;% ggplot(aes(x = Longitude, y = Latitude)) +
   scale_color_brewer(palette="Paired")
 ```
 
-![](03_reading-files_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+![](03_reading-files_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 There are some stations with wrong(?) UTC offsets
     </textarea>

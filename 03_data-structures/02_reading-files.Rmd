@@ -209,7 +209,17 @@ us2000 <- jsonlite::fromJSON(sprintf(url,  2000, studentnames))
 us2000
 us2010
 ```
+---
 
+# Census data and R
+
+- the `tidycensus` package by Kyle Walker is amazing!
+
+- Book [*Analyzing US Census Data: Methods, Maps, and Models in R*](https://walker-data.com/census-r/) - brand new
+
+- Provides unified access to Census API across multiple data sources (microsamples, decennial, ACS) for various aggregation levels (state, county, school district, tract) and associated shapefiles
+
+- does lots of the data cleaning for us :)
 ---
 
 # HTML FILES

@@ -98,7 +98,7 @@ system.time(d1 &lt;- read.csv("../data/nasadata.csv"))
 
 ```
 ##    user  system elapsed 
-##   0.189   0.005   0.194
+##   0.195   0.007   0.202
 ```
 
 ```r
@@ -107,7 +107,7 @@ system.time(d2 &lt;- readRDS("../data/nasadata.rds"))
 
 ```
 ##    user  system elapsed 
-##   0.018   0.001   0.019
+##   0.017   0.001   0.018
 ```
 
 speed-up is about factor 10 in favor of binary files
@@ -300,16 +300,16 @@ us2000
 ```
 
 ```
-##      [,1]     [,2]    [,3]    [,4]       [,5]       [,6]     [,7]         
-## [1,] "NAME"   "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "PCTAPI" "PCTHISPANIC"
-## [2,] "AKBARI" "523"   "39560" "61.95"    "(S)"      "14.72"  "2.29"       
-## [3,] "GUO"    "6058"  "5287"  "0.91"     "(S)"      "97.59"  "0.4"        
-## [4,] "PANG"   "6627"  "4865"  "4.04"     "0.36"     "88.47"  "1.77"       
-##      [,8]    
-## [1,] "NAME"  
-## [2,] "AKBARI"
-## [3,] "GUO"   
-## [4,] "PANG"
+##      [,1]    [,2]    [,3]    [,4]       [,5]       [,6]     [,7]         
+## [1,] "NAME"  "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "PCTAPI" "PCTHISPANIC"
+## [2,] "GUO"   "6058"  "5287"  "0.91"     "(S)"      "97.59"  "0.4"        
+## [3,] "QIAO"  "356"   "54269" "(S)"      "0"        "98.31"  "(S)"        
+## [4,] "ZHANG" "33202" "963"   "0.61"     "0.09"     "98.16"  "0.16"       
+##      [,8]   
+## [1,] "NAME" 
+## [2,] "GUO"  
+## [3,] "QIAO" 
+## [4,] "ZHANG"
 ```
 
 ```r
@@ -317,18 +317,30 @@ us2010
 ```
 
 ```
-##      [,1]     [,2]    [,3]    [,4]       [,5]       [,6]     [,7]         
-## [1,] "NAME"   "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "PCTAPI" "PCTHISPANIC"
-## [2,] "AKBARI" "807"   "29309" "59.23"    "0.99"     "17.6"   "2.85"       
-## [3,] "GUO"    "12048" "2975"  "1.1"      "0.32"     "97.77"  "0.17"       
-## [4,] "PANG"   "7642"  "4645"  "3.93"     "0.48"     "86.97"  "2.39"       
-##      [,8]    
-## [1,] "NAME"  
-## [2,] "AKBARI"
-## [3,] "GUO"   
-## [4,] "PANG"
+##      [,1]    [,2]    [,3]    [,4]       [,5]       [,6]     [,7]         
+## [1,] "NAME"  "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "PCTAPI" "PCTHISPANIC"
+## [2,] "GUO"   "12048" "2975"  "1.1"      "0.32"     "97.77"  "0.17"       
+## [3,] "QIAO"  "841"   "28380" "1.19"     "0"        "98.34"  "(S)"        
+## [4,] "ZHANG" "70125" "472"   "0.99"     "0.16"     "98.06"  "0.15"       
+##      [,8]   
+## [1,] "NAME" 
+## [2,] "GUO"  
+## [3,] "QIAO" 
+## [4,] "ZHANG"
 ```
+---
 
+# Census data and R
+
+strickr::stickr_insert("tidycensus")
+
+- the `tidycensus` package by Kyle Walker is amazing!
+
+- Book [*Analyzing US Census Data: Methods, Maps, and Models in R*](https://walker-data.com/census-r/) - brand new
+
+- Provides unified access to Census API across multiple data sources (microsamples, decennial, ACS) for various aggregation levels (state, county, school district, tract) and associated shapefiles
+
+- does lots of the data cleaning for us :)
 ---
 
 # HTML FILES
