@@ -19,9 +19,19 @@ output:
 
 - What are the pros and cons?
 
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
 ---
 
 # nasa data - binary file
+
+```{r}
+data(nasa, package = "GGally")
+dim(nasa)
+saveRDS(nasa, "../data/nasadata.rds")
+```
 
 ![](images/nasa-binary.png)
 
@@ -29,15 +39,19 @@ output:
 
 # nasa data - text file
 
+```{r}
+write.csv(nasa, "../data/nasadata.csv", row.names = FALSE)
+```
+
 ![](images/nasa-text.png)
 
 ---
 
 # Text files and R
 
-- base R supports reading text files, e.g. `read.table(), read.csv(), read.delim()` reads data from  text files files with specified delimiters 
+- base R supports reading text files, e.g. `read.table(), read.csv(), read.delim()` reads data from  text files  with specified delimiters 
 
-- `write.table()` writes  text files files
+- `write.table()` writes  text files 
 
 - the `readr` package provides similar functionality: `read_csv, read_tsv, read_delim`
 
@@ -76,7 +90,7 @@ speed-up is about factor 10 in favor of binary files
 
 - No restriction in terms on content, streams of bytes
 
-- Advantage: Generally much smaller files, and with compression even smaller, e.g. `nasadata.csv` is 3.7Mb, `nasadata.rds` is 288kb
+- Advantage: Generally much smaller files, and with compression even smaller, e.g. `nasadata.csv` is 4.3Mb, `nasadata.rds` is 295Kb
 
 - Disadvantage:  
 
@@ -130,22 +144,24 @@ advantage: enables streaming data, i.e new observations can easily be added as t
 disadvantage: operations across observations are tricky
 
 ---
-class: inverse
-# Your Turn
 
-The package `jsonlite` (part of the `tidyverse`) has functions `toJSON` and `fromJSON` to transform between JSON data and R objects. 
+# package `jsonlite`
 
-- convert the first three observations from data `mtcars` into JSON format (use `pretty = TRUE` to make things readable)
 
-- copy the five lines from the previous slides into a character object. Use `fromJSON` to create an R object from it. What object do you get?
+The package `jsonlite` (tidyverse package, but not part of the core) has functions `toJSON` and `fromJSON` to transform between JSON data and R objects. 
+
+```{r, message = FALSE}
+library(jsonlite)
+mtcars[1:3,] %>% toJSON(pretty = TRUE)
+```
 
 ---
 class: inverse
-# Your Turn - Hard
+# Your Turn - Reading JSON tuples
 
 The Census Bureau provides access to some of its data through an API, which returns json (like) data.
 
-The call `https://api.census.gov/data/2010/surname?get=NAME,COUNT&RANK=1:100` returns values for surname and counts for the top 100 rank surnames of the 2010 surname table.
+The url `https://api.census.gov/data/2010/surname?get=NAME,COUNT&RANK=1:100` returns values for surname and counts for the top 100 rank surnames of the 2010 surname table.
 
 ```
 [["NAME","COUNT","RANK"],
@@ -166,24 +182,7 @@ Is your last name included? At what rank? what is the change in rank since 2000?
 ---
 
 ```{r}
-jsonlite::toJSON(mtcars[1:2,], pretty=TRUE)
-```
-
----
-
-```{r}
-char <- '[{"P0010001":710231,"NAME":"Alaska","state":"02"},
- {"P0010001":4779736,"NAME":"Alabama","state":"01"},
- {"P0010001":2915918,"NAME":"Arkansas","state":"05"},
- {"P0010001":6392017,"NAME":"Arizona","state":"04"},
- {"P0010001":37253956,"NAME":"California","state":"06"}]'
-
-str(jsonlite::fromJSON(char))
-```
----
-
-```{r}
-query <- "https://api.census.gov/data/2010/surname?get=NAME,COUNT,PCTWHITE,PCTBLACK,PCTHISPANIC&RANK=1:100"
+query <- "https://api.census.gov/data/2010/surname?get=NAME,COUNT,PCTWHITE,PCTBLACK,PCTHISPANIC,PCTAPI&RANK=1:100"
 
 surnames <- jsonlite::fromJSON(query)
 
@@ -195,9 +194,17 @@ result is a matrix - it will need some work to turn into a data frame
 
 # Navel gazing
 
+```{r, echo=FALSE}
+stat585 <- toupper(c("Adokwei", "Akbari", "Ali", "Castaneda", "Cleveringa", "Collins", "Erden", "Fili", "Guo", "Hofmann", "Ju", "Liming", "Lin", "Nelson", "Pang", "Qi", "Qiao", "Quan", "Shah%20Abadi", "Wan", "Zaman", "Zhang", "Zhou"))
+students <- sample(stat585, 3)
+```
+
 ```{r}
-us2010 <- jsonlite::fromJSON("https://api.census.gov/data/2010/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK&NAME=HOFMANN&NAME=VANDERPLAS")
-us2000 <- jsonlite::fromJSON("https://api.census.gov/data/2000/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK&NAME=HOFMANN&NAME=VANDERPLAS")
+url <- "https://api.census.gov/data/%s/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK,PCTAPI,PCTHISPANIC&%s"
+studentnames <- paste("NAME=",students, sep="", collapse = "&")
+
+us2010 <- jsonlite::fromJSON(txt=sprintf(url,  2010, studentnames))
+us2000 <- jsonlite::fromJSON(sprintf(url,  2000, studentnames))
 
 us2000
 us2010
@@ -221,10 +228,10 @@ us2010
 
 ```{r warnings=FALSE, message=FALSE}
 library(rvest)
-url <- "https://www.nytimes.com/elections/results/iowa-house-district-4"
+url <- "https://www.nytimes.com/interactive/2020/11/03/us/elections/results-iowa-senate.html"
 doc <- read_html(url)
 tables <- html_table(doc, fill=TRUE)
-head(tables[[2]])
+head(tables[[2]][,-(3:4)])
 ```
 
 

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="" xml:lang="">
   <head>
     <title>Stat 585 - Reading files</title>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <meta name="author" content="Heike Hofmann" />
+    <script src="libs/header-attrs-2.11.6/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
     <link rel="stylesheet" href="tweaks.css" type="text/css" />
@@ -26,9 +27,25 @@ class: center, middle, inverse, title-slide
 
 - What are the pros and cons?
 
+
+
 ---
 
 # nasa data - binary file
+
+
+```r
+data(nasa, package = "GGally")
+dim(nasa)
+```
+
+```
+## [1] 41472    17
+```
+
+```r
+saveRDS(nasa, "../data/nasadata.rds")
+```
 
 ![](images/nasa-binary.png)
 
@@ -36,15 +53,20 @@ class: center, middle, inverse, title-slide
 
 # nasa data - text file
 
+
+```r
+write.csv(nasa, "../data/nasadata.csv", row.names = FALSE)
+```
+
 ![](images/nasa-text.png)
 
 ---
 
 # Text files and R
 
-- base R supports reading text files, e.g. `read.table(), read.csv(), read.delim()` reads data from  text files files with specified delimiters 
+- base R supports reading text files, e.g. `read.table(), read.csv(), read.delim()` reads data from  text files  with specified delimiters 
 
-- `write.table()` writes  text files files
+- `write.table()` writes  text files 
 
 - the `readr` package provides similar functionality: `read_csv, read_tsv, read_delim`
 
@@ -76,7 +98,7 @@ system.time(d1 &lt;- read.csv("../data/nasadata.csv"))
 
 ```
 ##    user  system elapsed 
-##   0.200   0.004   0.205
+##   0.189   0.005   0.194
 ```
 
 ```r
@@ -85,7 +107,7 @@ system.time(d2 &lt;- readRDS("../data/nasadata.rds"))
 
 ```
 ##    user  system elapsed 
-##   0.033   0.000   0.033
+##   0.018   0.001   0.019
 ```
 
 speed-up is about factor 10 in favor of binary files
@@ -97,7 +119,7 @@ speed-up is about factor 10 in favor of binary files
 
 - No restriction in terms on content, streams of bytes
 
-- Advantage: Generally much smaller files, and with compression even smaller, e.g. `nasadata.csv` is 3.7Mb, `nasadata.rds` is 288kb
+- Advantage: Generally much smaller files, and with compression even smaller, e.g. `nasadata.csv` is 4.3Mb, `nasadata.rds` is 295Kb
 
 - Disadvantage:  
 
@@ -151,44 +173,16 @@ advantage: enables streaming data, i.e new observations can easily be added as t
 disadvantage: operations across observations are tricky
 
 ---
-class: inverse
-# Your Turn
 
-The package `jsonlite` (part of the `tidyverse`) has functions `toJSON` and `fromJSON` to transform between JSON data and R objects. 
+# package `jsonlite`
 
-- convert the first three observations from data `mtcars` into JSON format (use `pretty = TRUE` to make things readable)
 
-- copy the five lines from the previous slides into a character object. Use `fromJSON` to create an R object from it. What object do you get?
-
----
-class: inverse
-# Your Turn - Hard
-
-The Census Bureau provides access to some of its data through an API, which returns json (like) data.
-
-The call `https://api.census.gov/data/2010/surname?get=NAME,COUNT&amp;RANK=1:100` returns values for surname and counts for the top 100 rank surnames of the 2010 surname table.
-
-```
-[["NAME","COUNT","RANK"],
-["ADAMS","427865","42"],
-["ALLEN","482607","33"],
-["ALVAREZ","233983","92"],
-["ANDERSON","784404","15"],
-["BAILEY","277845","72"],
-["BAKER","419586","44"],
-...
-]
-```
-
-Change the above call to include additional data on demographics (see [variables for surname data](https://api.census.gov/data/2010/surname/variables.html)) and read it into your R session.  
-
-Is your last name included? At what rank? what is the change in rank since 2000?
-
----
+The package `jsonlite` (tidyverse package, but not part of the core) has functions `toJSON` and `fromJSON` to transform between JSON data and R objects. 
 
 
 ```r
-jsonlite::toJSON(mtcars[1:2,], pretty=TRUE)
+library(jsonlite)
+mtcars[1:3,] %&gt;% toJSON(pretty = TRUE)
 ```
 
 ```
@@ -220,34 +214,53 @@ jsonlite::toJSON(mtcars[1:2,], pretty=TRUE)
 ##     "gear": 4,
 ##     "carb": 4,
 ##     "_row": "Mazda RX4 Wag"
+##   },
+##   {
+##     "mpg": 22.8,
+##     "cyl": 4,
+##     "disp": 108,
+##     "hp": 93,
+##     "drat": 3.85,
+##     "wt": 2.32,
+##     "qsec": 18.61,
+##     "vs": 1,
+##     "am": 1,
+##     "gear": 4,
+##     "carb": 1,
+##     "_row": "Datsun 710"
 ##   }
 ## ]
 ```
 
 ---
+class: inverse
+# Your Turn - Reading JSON tuples
 
+The Census Bureau provides access to some of its data through an API, which returns json (like) data.
 
-```r
-char &lt;- '[{"P0010001":710231,"NAME":"Alaska","state":"02"},
- {"P0010001":4779736,"NAME":"Alabama","state":"01"},
- {"P0010001":2915918,"NAME":"Arkansas","state":"05"},
- {"P0010001":6392017,"NAME":"Arizona","state":"04"},
- {"P0010001":37253956,"NAME":"California","state":"06"}]'
-
-str(jsonlite::fromJSON(char))
-```
+The url `https://api.census.gov/data/2010/surname?get=NAME,COUNT&amp;RANK=1:100` returns values for surname and counts for the top 100 rank surnames of the 2010 surname table.
 
 ```
-## 'data.frame':	5 obs. of  3 variables:
-##  $ P0010001: int  710231 4779736 2915918 6392017 37253956
-##  $ NAME    : chr  "Alaska" "Alabama" "Arkansas" "Arizona" ...
-##  $ state   : chr  "02" "01" "05" "04" ...
+[["NAME","COUNT","RANK"],
+["ADAMS","427865","42"],
+["ALLEN","482607","33"],
+["ALVAREZ","233983","92"],
+["ANDERSON","784404","15"],
+["BAILEY","277845","72"],
+["BAKER","419586","44"],
+...
+]
 ```
+
+Change the above call to include additional data on demographics (see [variables for surname data](https://api.census.gov/data/2010/surname/variables.html)) and read it into your R session.  
+
+Is your last name included? At what rank? what is the change in rank since 2000?
+
 ---
 
 
 ```r
-query &lt;- "https://api.census.gov/data/2010/surname?get=NAME,COUNT,PCTWHITE,PCTBLACK,PCTHISPANIC&amp;RANK=1:100"
+query &lt;- "https://api.census.gov/data/2010/surname?get=NAME,COUNT,PCTWHITE,PCTBLACK,PCTHISPANIC,PCTAPI&amp;RANK=1:100"
 
 surnames &lt;- jsonlite::fromJSON(query)
 
@@ -255,17 +268,17 @@ head(surnames, 10)
 ```
 
 ```
-##       [,1]        [,2]      [,3]       [,4]       [,5]          [,6]  
-##  [1,] "NAME"      "COUNT"   "PCTWHITE" "PCTBLACK" "PCTHISPANIC" "RANK"
-##  [2,] "SMITH"     "2442977" "70.9"     "23.11"    "2.4"         "1"   
-##  [3,] "JOHNSON"   "1932812" "58.97"    "34.63"    "2.36"        "2"   
-##  [4,] "WILLIAMS"  "1625252" "45.75"    "47.68"    "2.49"        "3"   
-##  [5,] "BROWN"     "1437026" "57.95"    "35.6"     "2.52"        "4"   
-##  [6,] "JONES"     "1425470" "55.19"    "38.48"    "2.29"        "5"   
-##  [7,] "GARCIA"    "1166120" "5.38"     "0.45"     "92.03"       "6"   
-##  [8,] "MILLER"    "1161437" "84.11"    "10.76"    "2.17"        "7"   
-##  [9,] "DAVIS"     "1116357" "62.2"     "31.6"     "2.44"        "8"   
-## [10,] "RODRIGUEZ" "1094924" "4.75"     "0.54"     "93.77"       "9"
+##       [,1]       [,2]      [,3]       [,4]       [,5]          [,6]     [,7]  
+##  [1,] "NAME"     "COUNT"   "PCTWHITE" "PCTBLACK" "PCTHISPANIC" "PCTAPI" "RANK"
+##  [2,] "ADAMS"    "427865"  "74.02"    "19.9"     "2.57"        "0.56"   "42"  
+##  [3,] "ALLEN"    "482607"  "67.59"    "26.17"    "2.47"        "0.54"   "33"  
+##  [4,] "ALVAREZ"  "233983"  "5.18"     "0.6"      "92.45"       "1.16"   "92"  
+##  [5,] "ANDERSON" "784404"  "75.17"    "18.93"    "2.44"        "0.61"   "15"  
+##  [6,] "BAILEY"   "277845"  "72.45"    "22"       "2.28"        "0.5"    "72"  
+##  [7,] "BAKER"    "419586"  "79.83"    "14.44"    "2.28"        "0.56"   "44"  
+##  [8,] "BENNETT"  "247599"  "76.56"    "17.53"    "2.5"         "0.53"   "86"  
+##  [9,] "BROOKS"   "251663"  "60.22"    "33.47"    "2.48"        "0.48"   "82"  
+## [10,] "BROWN"    "1437026" "57.95"    "35.6"     "2.52"        "0.51"   "4"
 ```
 
 result is a matrix - it will need some work to turn into a data frame
@@ -274,18 +287,29 @@ result is a matrix - it will need some work to turn into a data frame
 # Navel gazing
 
 
+
+
 ```r
-us2010 &lt;- jsonlite::fromJSON("https://api.census.gov/data/2010/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK&amp;NAME=HOFMANN&amp;NAME=VANDERPLAS")
-us2000 &lt;- jsonlite::fromJSON("https://api.census.gov/data/2000/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK&amp;NAME=HOFMANN&amp;NAME=VANDERPLAS")
+url &lt;- "https://api.census.gov/data/%s/surname?get=NAME,COUNT,RANK,PCTWHITE,PCTBLACK,PCTAPI,PCTHISPANIC&amp;%s"
+studentnames &lt;- paste("NAME=",students, sep="", collapse = "&amp;")
+
+us2010 &lt;- jsonlite::fromJSON(txt=sprintf(url,  2010, studentnames))
+us2000 &lt;- jsonlite::fromJSON(sprintf(url,  2000, studentnames))
 
 us2000
 ```
 
 ```
-##      [,1]         [,2]    [,3]    [,4]       [,5]       [,6]        
-## [1,] "NAME"       "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "NAME"      
-## [2,] "HOFMANN"    "8824"  "3695"  "96.5"     "0.35"     "HOFMANN"   
-## [3,] "VANDERPLAS" "179"   "94676" "96.65"    "0"        "VANDERPLAS"
+##      [,1]     [,2]    [,3]    [,4]       [,5]       [,6]     [,7]         
+## [1,] "NAME"   "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "PCTAPI" "PCTHISPANIC"
+## [2,] "AKBARI" "523"   "39560" "61.95"    "(S)"      "14.72"  "2.29"       
+## [3,] "GUO"    "6058"  "5287"  "0.91"     "(S)"      "97.59"  "0.4"        
+## [4,] "PANG"   "6627"  "4865"  "4.04"     "0.36"     "88.47"  "1.77"       
+##      [,8]    
+## [1,] "NAME"  
+## [2,] "AKBARI"
+## [3,] "GUO"   
+## [4,] "PANG"
 ```
 
 ```r
@@ -293,10 +317,16 @@ us2010
 ```
 
 ```
-##      [,1]         [,2]    [,3]    [,4]       [,5]       [,6]        
-## [1,] "NAME"       "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "NAME"      
-## [2,] "HOFMANN"    "9192"  "3857"  "95.21"    "0.36"     "HOFMANN"   
-## [3,] "VANDERPLAS" "188"   "96799" "90.43"    "(S)"      "VANDERPLAS"
+##      [,1]     [,2]    [,3]    [,4]       [,5]       [,6]     [,7]         
+## [1,] "NAME"   "COUNT" "RANK"  "PCTWHITE" "PCTBLACK" "PCTAPI" "PCTHISPANIC"
+## [2,] "AKBARI" "807"   "29309" "59.23"    "0.99"     "17.6"   "2.85"       
+## [3,] "GUO"    "12048" "2975"  "1.1"      "0.32"     "97.77"  "0.17"       
+## [4,] "PANG"   "7642"  "4645"  "3.93"     "0.48"     "86.97"  "2.39"       
+##      [,8]    
+## [1,] "NAME"  
+## [2,] "AKBARI"
+## [3,] "GUO"   
+## [4,] "PANG"
 ```
 
 ---
@@ -318,20 +348,22 @@ us2010
 
 ```r
 library(rvest)
-url &lt;- "https://www.nytimes.com/elections/results/iowa-house-district-4"
+url &lt;- "https://www.nytimes.com/interactive/2020/11/03/us/elections/results-iowa-senate.html"
 doc &lt;- read_html(url)
 tables &lt;- html_table(doc, fill=TRUE)
-head(tables[[2]])
+head(tables[[2]][,-(3:4)])
 ```
 
 ```
-##        County   King Scholten Aldrich Rpt.
-## 1       Story 13,474   27,569   1,178 100%
-## 2    Woodbury 15,708   18,686     562 100%
-## 3 Cerro Gordo  7,620   10,688     410 100%
-## 4       Sioux 10,824    3,682     182 100%
-## 5     Webster  6,706    6,918     277 100%
-## 6       Boone  5,350    6,353     285 100%
+## # A tibble: 6 × 4
+##   County        Margin         `Total votes` Absentee
+##   &lt;chr&gt;         &lt;chr&gt;          &lt;chr&gt;         &lt;chr&gt;   
+## 1 Johnson       Greenfield +40 82,591        59,748  
+## 2 Dubuque       Ernst +1.1     53,043        33,820  
+## 3 Pottawattamie Ernst +14      45,033        27,059  
+## 4 Woodbury      Ernst +12      44,472        27,028  
+## 5 Des Moines    Ernst +0.88    19,587        12,534  
+## 6 Marshall      Ernst +5       17,851        11,286
 ```
 
 
@@ -354,164 +386,8 @@ e.g. web index data at http://www.visualizing.org/datasets/web-index-2013
 - Rearranging and merging data from different sources helps to pull together the data necessary to solve the problem
 
 
-&lt;!-- ## "Awkward" text formats and R --&gt;
-
-&lt;!-- The National Climate Data Center at NOAA publishes information on temperature and precipation across a network of stations in the US. --&gt;
-
-&lt;!-- The Data can be accessed through ftp at ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5, a code book with a description of the data structure is available at --&gt;
-&lt;!-- ftp://ftp.ncdc.noaa.gov/pub/data/ushcn/v2.5/readme.txt --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- temp.all&lt;-readLines("../data/USH00132999.raw.tmax", n = 5) --&gt;
-&lt;!-- temp.all --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- --- --&gt;
-
-&lt;!-- ## From the code book --&gt;
-
-&lt;!-- ``` --&gt;
-&lt;!-- 2.2.1 DATA FORMAT --&gt;
-
-&lt;!--           Variable          Columns      Type --&gt;
-&lt;!--           --------          -------      ---- --&gt;
-
-&lt;!--           ID                 1-11        Integer --&gt;
-&lt;!--           YEAR              13-16        Integer --&gt;
-&lt;!--           VALUE1            17-22        Integer --&gt;
-&lt;!--           DMFLAG1           23-23        Character --&gt;
-&lt;!--           QCFLAG1           24-24        Character --&gt;
-&lt;!--           DSFLAG1           25-25        Character --&gt;
-&lt;!--             .                 .             . --&gt;
-&lt;!--             .                 .             . --&gt;
-&lt;!--             .                 .             . --&gt;
-&lt;!--           VALUE12          116-121       Integer --&gt;
-&lt;!--           DMFLAG12         122-122       Character --&gt;
-&lt;!--           QCFLAG12         123-123       Character --&gt;
-&lt;!--           DSFLAG12         124-124       Character --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- --- --&gt;
-
-&lt;!-- # Fixed width format --&gt;
-
-&lt;!-- - Fixed formats can be read with `read.fwf()` or `readr::read_fwf()` --&gt;
-
-&lt;!-- - Need to specify column positions: pretty painful to specify --&gt;
-
-&lt;!-- ```{r message=FALSE, warning = FALSE} --&gt;
-&lt;!-- library(tidyverse) --&gt;
-&lt;!-- temps &lt;- read_fwf("../data/USH00132999.raw.tmax", --&gt;
-&lt;!--   col_positions = fwf_positions( --&gt;
-&lt;!--     start=c( 1,13, rep(16+9*0:11, each=4) + c(1,7,8,9)),  --&gt;
-&lt;!--     end  =c(11,16, rep(16+9*0:11, each=4) + c(6,7,8,9)))) --&gt;
-&lt;!-- names(temps) &lt;- c("Station", "Year",  --&gt;
-&lt;!--   paste0(rep(c("Value","DMflag", "QCflag", "DSflag"), 12),  --&gt;
-&lt;!--          rep(1:12, each=4))) --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- --- --&gt;
-
-&lt;!-- # Fort Dodge temps --&gt;
-
-&lt;!-- ```{r warning = FALSE, message = FALSE, fig.height =4} --&gt;
-&lt;!-- FortDodge &lt;- temps %&gt;%  --&gt;
-&lt;!--   gather(key="Month", value="Temp_Max", starts_with("Value")) --&gt;
-&lt;!-- FortDodge$Month &lt;- as.numeric(gsub("Value", "", FortDodge$Month)) --&gt;
-&lt;!-- FortDodge$Temp_Max &lt;- replace(FortDodge$Temp_Max,  --&gt;
-&lt;!--                               FortDodge$Temp_Max == -9999, NA) --&gt;
-
-&lt;!-- FortDodge %&gt;% filter(Temp_Max &gt; -100) %&gt;% --&gt;
-&lt;!--   ggplot(aes(x = Year, Temp_Max/100)) +  --&gt;
-&lt;!--   geom_point() + facet_wrap(~Month, nrow=2) + geom_smooth(method="lm") --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- --- --&gt;
-
-&lt;!-- # USHCN network --&gt;
-
-&lt;!--   Parsing the information available in the file `ushcn-v2.5-stations.txt` was part of lab 1. This file is also in fixed width format: --&gt;
-
-&lt;!--   ``` --&gt;
-&lt;!-- ---------------------------------------- --&gt;
-&lt;!--   Variable             Columns    Type --&gt;
-&lt;!-- ---------------------------------------- --&gt;
-&lt;!-- COUNTRY CODE             1-2    Character --&gt;
-&lt;!-- NETWORK CODE               3    Character --&gt;
-&lt;!-- ID PLACEHOLDERS ("00")   4-5    Character --&gt;
-&lt;!-- COOP ID                 6-11    Character --&gt;
-&lt;!-- LATITUDE               13-20    Real --&gt;
-&lt;!-- LONGITUDE              22-30    Real --&gt;
-&lt;!-- ELEVATION              33-37    Real --&gt;
-&lt;!-- STATE                  39-40    Character --&gt;
-&lt;!-- NAME                   42-71    Character --&gt;
-&lt;!-- COMPONENT 1 (COOP ID)  73-78    Character --&gt;
-&lt;!-- COMPONENT 2 (COOP ID)  80-85    Character --&gt;
-&lt;!-- COMPONENT 3 (COOP ID)  87-92    Character --&gt;
-&lt;!-- UTC OFFSET             94-95    Integer --&gt;
-&lt;!-- ----------------------------------------- --&gt;
-&lt;!--   ``` --&gt;
-&lt;!-- --- --&gt;
-
-&lt;!-- ## First look at the data --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- stations&lt;-readLines("https://raw.githubusercontent.com/Stat585-at-ISU/materials/master/data/ushcn-v2.5-stations.txt", n = 5) --&gt;
-&lt;!-- head(stations) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- --- --&gt;
-
-&lt;!-- # reading the fixed width format  --&gt;
-
-&lt;!-- ```{r message=FALSE,  warning = FALSE} --&gt;
-&lt;!-- stations &lt;- read_fwf("https://raw.githubusercontent.com/Stat585-at-ISU/materials-2019/master/labs/ushcn-v2.5-stations.txt", --&gt;
-&lt;!--                      col_positions = fwf_positions( --&gt;
-&lt;!--                        start=c(1,3,4,6,13,22,33,39,42,73,80,87,94),  --&gt;
-&lt;!--                        end  =c(2,3,5,11,20,30,37,40,71,78,85,92,95))) --&gt;
-&lt;!-- # check that the formats are correct --&gt;
-&lt;!-- stations %&gt;% glimpse() --&gt;
-
-&lt;!-- ``` --&gt;
-
-&lt;!-- --- --&gt;
-
-&lt;!-- # Cleaning the data --&gt;
-
-&lt;!-- We need to get the names in: --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- names(stations) &lt;- c("Country code", "Network code", "ID", "Coop ID", --&gt;
-&lt;!--                      "Latitude", "Longitude", "Elevation", "State", --&gt;
-&lt;!--                      "Name", "Comp1", "Comp2", "Comp3", "UTC offset") --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- Which Iowa stations do we have? --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- stations[stations$State == "IA",]$Name --&gt;
-&lt;!-- ```     --&gt;
-
-&lt;!-- --- --&gt;
-
-&lt;!-- Now we plot: --&gt;
-
-&lt;!-- ```{r warning = FALSE, message = FALSE, fig.height = 4, fig.width = 8} --&gt;
-&lt;!-- us &lt;- map_data("state") --&gt;
-&lt;!-- stations &lt;- stations %&gt;% mutate( --&gt;
-&lt;!--   Elevation = as.numeric(Elevation) --&gt;
-&lt;!-- ) --&gt;
-&lt;!-- stations %&gt;% ggplot(aes(x = Longitude, y = Latitude)) + --&gt;
-&lt;!--   geom_path(aes(x = long, y = lat, group = group), data = us) + --&gt;
-&lt;!--   geom_point(aes(size = Elevation, colour = factor(`UTC offset`)), alpha = 0.5) + --&gt;
-&lt;!--   scale_size(range=c(0.5, 3.5)) + --&gt;
-&lt;!--   theme_bw() + --&gt;
-&lt;!--   scale_color_brewer(palette="Paired") --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- There are some stations with wrong(?) UTC offsets  --&gt;
     </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
 "highlightStyle": "github",
@@ -521,16 +397,89 @@ e.g. web index data at http://www.visualizing.org/datasets/web-index-2013
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
 });
-(function() {
-  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
   if (!r) return;
   s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
   d.head.appendChild(s);
-})();</script>
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
 
 <script>
-(function() {
-  var i, text, code, codes = document.getElementsByTagName('code');
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
   for (i = 0; i < codes.length;) {
     code = codes[i];
     if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
@@ -544,7 +493,8 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     }
     i++;
   }
-})();
+};
+slideshow._releaseMath(document);
 </script>
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
