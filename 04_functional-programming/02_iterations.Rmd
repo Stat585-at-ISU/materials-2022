@@ -1,0 +1,205 @@
+---
+title: "Stat 585 - Iterations"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, default-fonts, "tweaks.css"]
+    nature:
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+## Iterations
+
+- Run the same block of code multiple times:
+```{r iterations1, eval = F}
+for (i in players) {
+  #####################
+  # Block of commands #
+  #####################
+  
+  # Output
+}
+```
+
+---
+
+## Iterations
+
+- Run the same block of code multiple times:
+```{r iterations2, eval = F}
+for (i in players) {
+  #####################
+  # Block of commands #
+  #####################
+  
+  print(avg)
+}
+```
+
+
+---
+
+## Iterations
+
+- Run the same block of code multiple times:
+```{r iterations3, eval = F}
+for (i in players) {
+  
+  player <- subset(baseball, playerID == i)
+  avg <- sum(H/AB, na.rm = T)
+  
+  print(avg)
+}
+```
+
+--
+
+This is a loop, or iteration
+
+---
+
+## Iterations and R
+
+- R is vector-based - many tasks don't require loops at all
+
+- `for` loops are useful for debugging purposes
+
+There are several alternatives to `for` loops in R. We will look into some alternatives next time:
+
+- The `apply` series of functions (`lapply`, `sapply`, `mapply`, `tapply`) can be used to "loop" in R without an explicit `for` loop
+
+- `purrr` is a tidyverse package used for functional programming
+    - tidy version of `apply`: `map`
+    - more consistent API
+
+
+---
+class: inverse
+## Your Turn
+
+[FizzBuzz](http://www.dr-mikes-math-games-for-kids.com/fizz-buzz.html) is a common game to teach children multiplication tables
+
+Write a function that, for any number between lower bound $a$ and upper bound $b$, outputs the correct response to FizzBuzz:
+
+- if the number is divisible by 3, the program returns "fizz" instead of the number
+- if the number is divisible by 7, the program returns "buzz" instead of the number
+- if the number is divisible by 3 and 7, the program returns "fizzbuzz" instead of the number
+- in any other case return the number unchanged
+
+The modulus operator, `%%` will be useful.
+
+1. Write a fizzbuzz function using a `for` loop
+
+2. Can you make your function work without using a loop?
+
+---
+class: middle, center
+
+no peeking before trying!
+
+---
+
+it's usually a good idea to break down tasks into very simple steps
+
+```{r}
+fizzbuzz1 <- function(x) {
+  # we assume x is a single number
+  div3 <- (x %% 3) == 0
+  div7 <- (x %% 7) == 0
+  
+  if (div3 & div7) return("fizzbuzz")
+  if (div3) return("fizz")
+  if (div7) return("buzz")
+  return(x)
+}
+
+fizzbuzz1(5)
+fizzbuzz1(21)
+```
+
+---
+
+Now wrap `fizzbuzz1` into a bigger function
+
+```{r}
+fizzbuzz <- function(a, b) {
+  # we assume a and b are integer values
+  
+  for (i in a:b) fizzbuzz1(i)
+}
+
+fizzbuzz(1,10)
+```
+
+Why isn't anything happening?
+
+---
+
+We need to make some space to save values
+
+```{r}
+fizzbuzz <- function(a, b) {
+  # we assume a and b are integer values
+  
+  idx <- a:b
+  result <- rep(NA, length(idx))
+  for (i in 1:length(idx)) 
+    result[i] <- fizzbuzz1(idx[i])
+  
+  result
+}
+
+fizzbuzz(1,10)
+```
+
+---
+
+# Solution without a loop
+
+```{r}
+fizzbuzz_no_iter <- function(a, b) {
+  lower <- min(a, b)
+  upper <- max(a, b)
+  
+  if (lower == upper) return(fizzbuzz1(lower))
+  
+  return( c(fizzbuzz1(lower), fizzbuzz_no_iter(lower+1, upper)))
+}
+
+fizzbuzz_no_iter(1, 10)
+```
+
+---
+
+# ... and another solution without a loop
+
+```{r}
+fizzbuzz_vector <- function(a, b) {
+  # create a vector with numbers from a to b
+  x <- seq.int(from = min(a,b), to = max(a,b))
+  res <- x
+  
+  res[x %% 3 == 0] <- "fizz"
+  res[x %% 7 == 0] <- "buzz"
+  res[(x %% 3 == 0) & (x %% 7 == 0)] <- "fizzbuzz"
+  
+  res
+}
+
+fizzbuzz_vector(1,10)
+```
+---
+
+# Next steps ...
+
+Which of the functions is 'best'?
+
+Best as in: fastest, most readable, most maintainable
+
+... we will discuss profiling code and other aspects of good coding practices later

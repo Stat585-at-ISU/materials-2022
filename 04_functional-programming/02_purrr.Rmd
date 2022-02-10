@@ -1,0 +1,409 @@
+---
+title: "Stat 585 - List variables"
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, default-fonts, "tweaks.css"]
+    nature:
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width = 5, fig.height = 5)
+library(tidyverse)
+```
+
+## Example: the gapminder project
+
+Part of a quantitative world is our responsibility to make data accessible
+
+- Hans Rosling (2017✝) was at the fore-front of providing World Health Statistics (gapminder)
+
+- in R through the package `gapminder` by Jenny Bryan
+
+- Hans Rosling's [TED talk](https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen?language=en)
+
+
+---
+
+## First Look: US only
+
+```{r}
+library(gapminder)
+
+gapminder %>% filter(country == "United States") %>% 
+ ggplot(aes(x = year, y =lifeExp)) + geom_line() + geom_point()
+```
+
+How would you describe this plot?
+
+---
+
+## First Model: US only
+
+```{r}
+gapminder %>% filter(country == "United States") %>% 
+ ggplot(aes(x = year, y =lifeExp)) + geom_line() + geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+```
+
+---
+
+## Model of the US
+
+```{r warning = FALSE}
+lm(lifeExp~I(year-1950), data = filter(gapminder, country == "United States"))
+```
+
+---
+class: inverse
+## Your turn:  another country
+
+Pick another country in the gapminder data and derive estimates. 
+
+How do the estimates compare to the US?
+
+---
+
+## All countries
+
+```{r, fig.height = 4}
+gapminder %>% 
+ ggplot(aes(x = year, y =lifeExp)) + 
+  geom_line(aes(group = country, colour=continent)) 
+```
+
+--
+
+Most  countries show an increase in life expectancy over time, but not all
+
+--
+
+We would like to group similar countries 
+
+
+---
+
+## All countries - interactively
+
+```{r, fig.height = 6, fig.width = 8}
+gg <- gapminder %>% 
+ ggplot(aes(x = year, y =lifeExp)) + 
+  geom_line(aes(group = country, colour=continent)) 
+plotly::ggplotly(gg)
+```
+
+---
+
+## Using models as exploratory tools
+
+Now we would like to repeat this modelling approach to all countries, i.e. 
+
+- *split* by country, 
+
+- *apply* the model, 
+
+- *combine* the results. 
+
+But we certainly don't want to subset the data for every country ... 
+
+---
+
+## First approach
+
+```{r}
+gapminderplus <- gapminder %>% 
+  group_by(country) %>%
+  mutate(year = year - 1950) %>% 
+  summarize(
+    intercept = coef(lm(lifeExp ~ year))[1],
+    slope = coef(lm(lifeExp ~ year))[2]
+  )
+```
+
+---
+
+```{r}
+gapminderplus %>% ggplot(aes(x = intercept, y = slope)) + 
+  geom_point()
+```
+
+---
+
+```{r}
+gapminderplus %>% 
+  ggplot(aes(x = intercept, y = slope)) + 
+  geom_point() +
+  geom_text(aes(label = country), 
+            data = filter(gapminderplus, slope < 0),
+            nudge_y = 0.035)
+```
+
+---
+
+## Cons: First approach
+
+- double evaluation of the model is bad
+
+- what if we want to get additional values from the model, such as $R^2$?
+
+- what if we want to get additional values from the data, such as continent?
+
+```{r}
+gapminderplus <- gapminder %>% 
+  group_by(country) %>%
+  mutate(year = year - 1950) %>% 
+  summarize(
+    model = coef(lm(lifeExp ~ year))[1],
+    slope = coef(lm(lifeExp ~ year))[2]
+  )
+```
+
+---
+
+# List variables
+
+one step into the right direction is the use of list variables:
+
+```{r}
+gapminderplus <- gapminder %>% 
+   group_by(country) %>%
+   mutate(year = year - 1950) %>% 
+   summarize(
+     model = list(lm(lifeExp ~ year))
+   )
+
+gapminderplus
+```
+
+---
+
+## Split-Apply-Combine for lists
+
+
+- `nest` creates list of data frames (split)
+
+- `map` applies function to list object (apply)
+
+- `unnest` moves list results back into a data frame (combine)
+
+
+---
+
+## nest
+
+- `nest` is a function in `tidyr`: creates variable `data`
+
+- `data` is (list) variable of data frames
+
+```{r}
+countryList <- gapminder %>% mutate(year = year-1950) %>% 
+  nest(-country, -continent) 
+countryList 
+```
+
+
+---
+
+## Nested data frames
+
+Each element of the `data` variable in `countryList` is a dataset:
+
+```{r}
+countryList$data[[10]] %>% arrange(year)
+```
+
+---
+class: inverse
+## Your Turn
+
+Find the data for Canada from `countryList`
+
+Why does `countryList$data[[countryList$country=="Canada"]]` not work?
+
+---
+
+## Nested data frames (cont'd)
+
+We can use the list elements as data inputs:
+
+```{r}
+lm(lifeExp~year, data=countryList$data[[10]])
+```
+
+
+---
+class: inverse
+## Your Turn (8 mins) 
+
+
+The goal of this your turn is for you to try out nesting operations on various datasets.
+
+- Nest the `ChickWeight` data in different ways: what are the results of 
+
+```
+ChickWeight %>% nest(-Diet)
+ChickWeight %>% nest(weight)
+ChickWeight %>% nest(Time, weight)
+```
+
+- `chickwts` is yet another data set on feeding chicks. Nest it by different feeds. 
+
+- `nest` respects grouping structure introduced by `group_by`. Use `group_by` to nest the `iris` dataset by species. 
+
+
+---
+
+## Fitting multiple models
+
+Now we are using the `map` function in the package `purrr`.
+
+`map` allows us to apply a function to each element of a list.
+
+
+```{r}
+myfit <- function (dframe) {
+  lm(lifeExp ~ year, data = dframe)
+}
+
+countryList <- countryList %>% mutate(
+    model = purrr::map(data, myfit)
+)
+head(countryList)
+```
+
+---
+
+## Fitting multiple models - Alternative
+
+`map` allows us to use a formula instead of a function (creates anonymous function on the fly):
+
+`countryList` is now essentially the same object as `gapminderplus`
+
+
+```{r}
+countryList <- countryList %>% mutate(
+    model = purrr::map(data, function(d) lm(lifeExp~year, data = d))
+)
+head(countryList)
+```
+
+---
+
+# Extracting model estimates
+
+```{r}
+countryList %>%
+  mutate(
+    intercept = model %>% purrr::map_dbl(.f = function(m) coef(m)[1]),
+    slope = model %>% purrr::map_dbl(.f = function(m) coef(m)[2])
+  ) %>% head(5)
+```
+... bit complicated?
+
+---
+
+## The broom package
+
+Now we have all these models ... 
+
+<img src="images/broom.jpeg" class="cover" width=1000>
+
+
+---
+
+## The `broom` package
+
+`broom` allows to extract values from models on three levels:
+
+- for each model: `broom::glance`
+
+- for each coefficient in the model: `broom::tidy`
+
+- for each value in the dataset: `broom::augment`
+
+--
+
+```{r}
+library(broom)
+broom::glance(countryList$model[[1]])
+```
+
+---
+
+```{r}
+broom::tidy(countryList$model[[1]])
+```
+
+---
+
+```{r}
+broom::augment(countryList$model[[1]])
+```
+
+---
+
+##Extract values for each coefficient
+
+Extract coefficients for all countries automatically (hello `map` again!)
+
+```{r}
+# works, but we lose the context
+coefs = countryList$model %>% purrr::map(.f=broom::tidy)
+head(coefs)
+```
+
+---
+
+##Extract values for each coefficient (cont'd)
+
+```{r}
+# better, but everything is still stuffed into this strange format
+countryList <- countryList %>% mutate(
+  coefs = model %>% purrr::map(.f=broom::tidy)
+) 
+countryList %>% head()
+```
+
+---
+
+## Ready to fly!
+
+The opposite of `nest` is `unnest`:
+
+```{r}
+coefs <- countryList %>% select(country, continent, coefs) %>% 
+  unnest()
+coefs
+```
+
+---
+
+## Reshaping
+
+```{r fig.width=4.5, fig.height = 4.5}
+coefsLong <- coefs %>% pivot_longer(names_to="Statistic", values_to = "Value", 4:7)
+coefsTerm <- coefsLong %>% pivot_wider(names_from="term", values_from="Value")
+coefsTerm %>% filter(Statistic == "estimate") %>% 
+  ggplot(aes(x = `(Intercept)`, y = year)) + 
+  geom_point(aes(colour = continent)) + ylab("Slope (year)")
+```
+
+
+---
+class: inverse
+## Your turn (10 mins)
+
+- Extract other model diagnostics: find the R square value for each model. Draw a visualization of R square by country - can you see a pattern? What does the pattern mean?
+
+- Extract residuals and fitted values for each of the models and store them in a dataset together with country and continent information. 
+
+- Plot residuals across the years and fit a smooth. What does the pattern mean?
+
+- Include predicted Life Expectancy for 2017 into the data set. Then compare predicted life expectancy in 2017 with that in 1950.
+
+
