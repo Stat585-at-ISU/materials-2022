@@ -101,7 +101,7 @@ The modulus operator, `%%` will be useful.
 ---
 class: middle, center
 
-no peeking before trying!
+# no peeking before trying!
 
 ---
 
@@ -244,10 +244,10 @@ fbgen <- function(m, n) {
 ```{r}
 fb23 <- fbgen(2L,3L) # the L turns 2 and 3 into integers
 fb23
+
+fb23(1:10)
 ```
 
 ---
-
-```{r}
-fb23(1:10)
-```
+class: middle, center
+# ... take another approach to iterations
