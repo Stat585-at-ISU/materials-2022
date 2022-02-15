@@ -231,13 +231,84 @@ fizzbuzz_vector(1,10)
 ```
 ---
 
-# Next steps ...
+# Still to do later  ...
 
 Which of the functions is 'best'?
 
 Best as in: fastest, most readable, most maintainable
 
 ... we will discuss profiling code and other aspects of good coding practices later
+
+
+---
+
+# Functions of functions
+
+- The output of a function can also be a function
+
+- The fizzbuzz game can be played with any two integer values besides 3 and 7
+
+- We could therefore make a function `fbgen (m, n)` that makes a fizzbuzz function for integers `m` and `n`
+
+---
+
+
+```r
+fbgen &lt;- function(m, n) {
+  # couple of error checks
+  stopifnot(is.integer(m), is.integer(n), 
+            length(m) == 1, length(n) == 1,
+            m != n)
+  
+  res &lt;- function(x) {
+    stopifnot(is.numeric(x))
+    
+    out &lt;- x 
+    out[x %% m == 0] &lt;- "fizz"
+    out[x %% n == 0] &lt;- "buzz"
+    out[x %% (m*n) == 0] &lt;- "fizzbuzz"
+    
+    return(out)
+  }
+  
+  return(res)
+}
+```
+
+---
+
+
+```r
+fb23 &lt;- fbgen(2L,3L) # the L turns 2 and 3 into integers
+fb23
+```
+
+```
+## function(x) {
+##     stopifnot(is.numeric(x))
+##     
+##     out &lt;- x 
+##     out[x %% m == 0] &lt;- "fizz"
+##     out[x %% n == 0] &lt;- "buzz"
+##     out[x %% (m*n) == 0] &lt;- "fizzbuzz"
+##     
+##     return(out)
+##   }
+## &lt;bytecode: 0x7ffebada4b80&gt;
+## &lt;environment: 0x7ffebb678bc8&gt;
+```
+
+---
+
+
+```r
+fb23(1:10)
+```
+
+```
+##  [1] "1"        "fizz"     "buzz"     "fizz"     "5"        "fizzbuzz"
+##  [7] "7"        "fizz"     "buzz"     "fizz"
+```
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

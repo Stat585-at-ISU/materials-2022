@@ -196,10 +196,58 @@ fizzbuzz_vector(1,10)
 ```
 ---
 
-# Next steps ...
+# Still to do later  ...
 
 Which of the functions is 'best'?
 
 Best as in: fastest, most readable, most maintainable
 
 ... we will discuss profiling code and other aspects of good coding practices later
+
+
+---
+
+# Functions of functions
+
+- The output of a function can also be a function
+
+- The fizzbuzz game can be played with any two integer values besides 3 and 7
+
+- We could therefore make a function `fbgen (m, n)` that makes a fizzbuzz function for integers `m` and `n`
+
+---
+
+```{r}
+fbgen <- function(m, n) {
+  # couple of error checks
+  stopifnot(is.integer(m), is.integer(n), 
+            length(m) == 1, length(n) == 1,
+            m != n)
+  
+  res <- function(x) {
+    stopifnot(is.numeric(x))
+    
+    out <- x 
+    out[x %% m == 0] <- "fizz"
+    out[x %% n == 0] <- "buzz"
+    out[x %% (m*n) == 0] <- "fizzbuzz"
+    
+    return(out)
+  }
+  
+  return(res)
+}
+```
+
+---
+
+```{r}
+fb23 <- fbgen(2L,3L) # the L turns 2 and 3 into integers
+fb23
+```
+
+---
+
+```{r}
+fb23(1:10)
+```
