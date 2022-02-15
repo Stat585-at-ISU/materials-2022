@@ -67,6 +67,7 @@ Pick another country in the gapminder data and derive estimates.
 
 How do the estimates compare to the US?
 
+
 ---
 
 ## All countries
@@ -179,6 +180,49 @@ gapminderplus <- gapminder %>%
 
 gapminderplus
 ```
+
+
+---
+
+# List variables: stepping through
+
+The `map` function of the `purrr` package allows us to apply a function to each element of a list.
+`map_dbl` returns a double value, `map_df` a data frame. `map` itself returns a list.
+
+```{r}
+gapminderplus <- gapminderplus %>% 
+   mutate(
+     intercept = model %>% purrr::map_dbl(.f = function(m) m$coef[1])
+   )
+
+gapminderplus %>% head()
+```
+
+--- 
+
+```{r echo=FALSE}
+gapminderplus <- gapminderplus %>% 
+   mutate(
+     slope = model %>% purrr::map_dbl(.f = function(m) m$coef[2])
+   )
+gapminderplus %>%
+  ggplot(aes(x = intercept, y = slope, colour = country)) +
+  geom_point() + 
+  scale_color_manual(values = country_colors) +
+  theme(legend.position = "none")
+```
+
+---
+class: inverse
+## Your Turn
+
+- Work through the previous example and expand the object `gapminderplus` by adding the slope from each model as an additional variable
+
+- Plot a scatterplot of slope and  intercept and compare. 
+
+- Advanced: Jenny Bryan is using pretty color schemes for these data at https://github.com/jennybc/gapminder
+Can you get those to work for your example? Test with ggplotly.
+
 
 ---
 
