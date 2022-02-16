@@ -1,0 +1,261 @@
+---
+title: 'Lab Assignment #2: Exploring the world'
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, echo = TRUE)
+```
+# Outline
+
+- The package `sf` for drawing maps (and keeping your sanity?)
+
+- Looking under the hood ...
+
+
+
+The final deliverable is again a self-contained RMarkdown file. 
+
+---
+
+# Lab organization
+
+1. As a team create *one* github repository. Make sure to create a README file.
+Make all of the team members contributors (under `Settings` > `Collaborators`)
+
+2. Create a file README.Rmd - this is the file that you will submit at the end of the lab
+
+3. Include a link to the repository in the README.Rmd file
+
+4. Create a folder `data` in the repository. Assume that all of the data files used are inside this folder, similar to the code used in this Rmarkdown file.
+
+
+---
+
+# The package `sf`
+
+A lot of government agencies use shapefiles to publish spatial information, such as states, counties, congressional districts, exact locations of state and national parks, etc. 
+
+The `sf` package is a new(ish) development that is likely going to replace packages `sp` and `maptools` for working with spatial data (https://r-spatial.github.io/sf/articles/sf1.html).
+
+**Install the `sf` package from CRAN. You might have to install additional dependencies.**
+
+
+<!--You might to also have to install `rgdal` (R package) and the gdal framework (https://www.gdal.org/).-->
+
+---
+
+# Fun with Middle Earth
+
+Not just the government, dedicated fan bases alike provide information in shapefiles. 
+The ME-DEM team recreates Tolkien's Middle Earth in shapefile format at https://github.com/jvangeld/ME-GIS
+
+Download the ME-GIS repository, put it into the data folder, but **do not push this folder to your repo** (We have to respect intellectual property). 
+
+---
+
+```{r}
+library(ggplot2)
+library(sf)
+
+rivers <- read_sf("data/ME-GIS/Rivers.shp")
+roads <- read_sf("data/ME-GIS/Roads.shp")
+
+p <- ggplot() +
+  geom_sf(data = read_sf("data/ME-GIS/Coastline2.shp"), 
+          colour="grey10", fill="grey90") +
+  geom_sf(data = rivers %>% dplyr::filter(TYPE=="Stream"), 
+          colour="steelblue", size=0.3) +
+  geom_sf(data = rivers %>% dplyr::filter(TYPE=="River, Unknown Length"), 
+          colour="steelblue", size=0.1) +
+ geom_sf(data = roads %>% dplyr::filter(TYPE == "PRIMARY"),
+         size = 0.7, colour="#663300") +
+ geom_sf(data = roads %>% dplyr::filter(TYPE == "SECONDARY"),
+         size = 0.5, colour="#663300") +
+ geom_sf(data = roads %>% dplyr::filter(TYPE == "TERTIARY"),
+         size = 0.3, colour="#663300") +
+  geom_sf(data = read_sf("data/ME-GIS/Cities.shp"), 
+          colour ="#336699", size = 3.5) +
+  theme_bw() 
+
+```
+
+---
+
+Now let's plot Middle Earth:
+```{r}
+p
+```
+
+---
+class: inverse
+# Todo for you: more map elements
+
+- Add labels for the cities (see  `geom_sf_text`) or maybe some regions?
+Where's the Shire? Where's Mordor?
+
+Getting Fancy:
+
+- To appreciate how far Frodo and Sam had to travel, include a scale with `annotation_scale` (`ggspatial`).
+- Also show North in a more map typical way with `annotation_north_arrow` (`ggspatial`)
+
+<br>
+
+**Include the code to produce the final map in your  RMarkdown file.**
+        
+---
+
+# Looking under the hood ...
+
+The main objective of this part is to write code that allows us to read in data from a shapefile and access the data in a way that allows us to use it in the `ggplot2` framework, i.e essentially we want to figure out what goes on behind the scenes after using `sf_read`.
+
+We will be using the australia shapefile for a concrete example and then try to bundle  general ideas into a function. 
+
+---
+
+# Quick review
+
+A map in ggplot2 consists a couple of variables to make things work:
+
+```{r}
+library(ggplot2)
+library(maps)
+states <- map_data("state")
+head(states)
+```
+
+- x and y variable for longitude and latitude. 
+- `group` identifies a polygon part. 
+- `order` specifies in which order the points in a polygon connect. 
+- `region` usually allows us to connect information from the outside to the map. 
+- `subregion` has no function for the states map, but takes on functionality for other maps
+
+---
+
+```{r, message=FALSE}
+library(dplyr)
+michigan <- 
+  states %>% 
+  filter(region=="michigan") %>%
+  group_by(group) %>% 
+  summarize(
+    region = region[1],
+    n = n())
+
+michigan
+```
+
+
+
+---
+
+```{r, fig.width=5, fig.height=3, fig.align='center'}
+ggplot(states, aes(x=long, y=lat, group=group)) + geom_polygon()
+```
+
+
+
+
+---
+
+# Australia shapefile
+
+For a concrete example, we will load in the data from the  shapefile for Australia
+
+```{r}
+ozbig <- read_sf("data/gadm36_AUS_shp/gadm36_AUS_1.shp")
+```
+
+Generally shape files are very big - we need to thin the number of points used. That's what the following lines do. Make sure to run those, or you will likely crash your R session.
+```{r}
+oz_st <- maptools::thinnedSpatialPoly(
+  as(ozbig, "Spatial"), tolerance = 0.1, 
+  minarea = 0.001, topologyPreserve = TRUE)
+oz <- st_as_sf(oz_st)
+```
+
+---
+
+# sf object
+
+```{r}
+oz
+```
+
+---
+
+`oz$geometry` is a list variable
+
+```{r}
+is.list(oz$geometry)
+```
+
+Each element in this list consists of another list: 
+
+```{r}
+str(oz$geometry[[1]])
+```
+
+---
+
+# Inner workings
+
+Now we work our way into the inner structure of the `geometry` object.
+
+Each element of the form `oz$geometry[[i]][[j]]` is another list with one element: a matrix with two columns
+
+```{r}
+head(oz$geometry[[1]][[3]][[1]])
+```
+
+These values give x and y coordinates of points of a polygon. 
+
+---
+class: inverse
+# Your Task
+
+Write a helper function to turn one of these matrices into a single data frame with variables `long`, `lat`, `group`, `order`.
+Use `purrr` functionality to create a dataframe `ozplus` from the `geometry` variable. Plot the result with the command:
+
+```
+ozplus %>% ggplot(aes(x = long, y = lat, group = group)) + geom_polygon()
+```
+
+Include all the code necessary to read the shape file and convert to the data frame plotted in your Rmarkdown file. 
+Include a plot of the result as well. 
+
+---
+
+# Testing your code
+
+How reliable is your code? - does it work on anything but the `oz` example? 
+
+There's only one way to answer that question! Try it out!
+
+In the next step, you are asked to get a shapefile of a country of your choice and use your code on the new shape file. 
+
+---
+class: inverse
+# GADM
+
+GADM is a service "to provide boundaries without borders" 
+
+- Go to the website at https://gadm.org/download_country_v3.html and download a shape file of a country of your choice.
+
+- Unzip the document and move the resulting folder into your working directory 
+
+- Read the shapefile (there are usually shapefiles at different administrative levels - pick one). Thin the shapefile (or you might crash your R session; shapefiles can be big)
+- Export the polygons and plot in `ggplot2`.
+
+Include the code and the result in your README.Rmd file. 
+
+<br>
+
+**Upload a link to your repository to Canvas. Only one submission per team is required. 
+Finishing touches can be made until Monday, Feb 21, 11:59 pm.**
