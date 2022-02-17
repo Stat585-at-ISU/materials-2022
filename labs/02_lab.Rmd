@@ -26,15 +26,25 @@ The final deliverable is again a self-contained RMarkdown file.
 
 # Lab organization
 
-1. As a team create *one* github repository. Make sure to create a README file.
-Make all of the team members contributors (under `Settings` > `Collaborators`)
+1. As last time, there is a google classroom link. Select the invite with your team's number. 
 
-2. Create a file README.Rmd - this is the file that you will submit at the end of the lab
+2. Hofmann, don't forget the Zoom breakout rooms. Join the room that matches your team number.
 
-3. Include a link to the repository in the README.Rmd file
+3. Final deliverable: submit a link to your repository in Canvas (This will show me that you are done working on your project).
 
-4. Create a folder `data` in the repository. Assume that all of the data files used are inside this folder, similar to the code used in this Rmarkdown file.
+4. Create a folder `data` in the repository. Assume that all of the data files used are inside this folder, similar to the code used in this Rmarkdown file. Upload the gadm data, but not the middle earth data. 
 
+
+
+---
+
+# First item: talk!
+
+Just as with lab #1, you are asked to create one file (README.Rmd) with your results. 
+
+All team members are supposed to contribute ... last time you might have realized that it is a pretty big mess if everybody writes into the README file all at the same time.
+
+This time: figure out a plan before you start working.
 
 ---
 
