@@ -1,0 +1,186 @@
+---
+title: 'Lab Assignment #2: Couple of extra hints'
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, echo = TRUE)
+```
+# Couple of extra hints
+
+- GADM shapefiles and Australia
+
+- matrices
+
+
+---
+
+# GADM shapefiles
+
+Link: https://gadm.org/download_country_v3.html provides access to a lot of different countries
+
+Various formats for shapefiles are available
+
+  - zipped folder with files: Shapefiles 
+  - R binary (rds) for each level 0, 1, 2
+  
+Levels describe country (0), states or territories (1), and counties or other districts (2)
+  
+  
+---
+
+# Australia - download zipped folder
+
+Download file from a path, unzip it and view the contents: 
+```{r}
+# download
+zipped <- "https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUS_shp.zip"
+download.file(zipped, destfile="data/gadm36_AUS.zip", mode="wb")
+
+# unzip
+unzip("data/gadm36_AUS.zip", exdir ="data/gadm36_AUS/")
+
+# view shapefiles (extension .shp)
+dir("data/gadm36_AUS/", pattern = "shp")
+```
+
+---
+
+# Read shape files for all levels 
+
+
+```{r}
+library(sf)
+oz_0 <- read_sf("data/gadm36_AUS/gadm36_AUS_0.shp")
+oz_1 <- read_sf("data/gadm36_AUS/gadm36_AUS_1.shp")
+oz_2 <- read_sf("data/gadm36_AUS/gadm36_AUS_2.shp")
+```
+
+Shapefiles can be quite big -  look at their size first before plotting
+
+```{r message = FALSE}
+library(maptools)
+object.size(as(oz_0, "Spatial"))
+object.size(as(oz_1, "Spatial"))
+object.size(as(oz_2, "Spatial"))
+
+```
+---
+
+# Thinning spatial structure
+
+Thinning algorithm (Douglas-Pecker algorithm) reduces the number of nodes in a polygon (works similar to smoothing by removing some of the small scale structure).
+
+Too much thinning will result in unrecognizable objects.
+
+
+```{r}
+thin <- function(x, tolerance = 0.1, minarea = 0.01) {
+  xx <- maptools::thinnedSpatialPoly(
+    as(x$geometry, "Spatial"), 
+    tolerance, minarea , topologyPreserve = TRUE)
+  x$geometry <- st_as_sf(xx)$geometry
+  x
+}
+
+object.size(oz_0)
+object.size(thin(oz_0))
+```
+
+---
+
+# Plot the shape files 
+
+```{r fig.height=3}
+library(ggplot2)
+library(patchwork)
+p0 <- ggplot() + 
+  geom_sf(data = thin(oz_0), colour = "red") + ggtitle("Level 0")
+p1 <- ggplot() +  
+  geom_sf(data = thin(oz_1), colour = "blue") + ggtitle("Level 1")
+p2 <- ggplot() + 
+  geom_sf(data = thin(oz_2), colour = "purple") + ggtitle("Level 2")
+p0+p1+p2
+```
+
+---
+
+# RDS files
+
+Work extremey similar to the shapefiles - download rds file at level of choice, thin, and plot: 
+```{r}
+# download
+rds_0 <- "https://biogeo.ucdavis.edu/data/gadm3.6/Rsp/gadm36_AUS_0_sp.rds"
+download.file(rds_0, destfile="data/rds_0.rds", mode="wb")
+ozrds_0 <- readRDS("data/rds_0.rds")
+
+class(ozrds_0)
+```
+
+```{r}
+ggplot() + 
+  geom_sf(data = thin(st_as_sf(ozrds_0)))
+```
+
+---
+
+# Inner workings
+
+Polygons are made up of sets of points containing geographic latitude and longitude, individual objects (such as e.g. Michigan) can be made up of multiple polygons.
+
+```{r message= FALSE}
+library(dplyr)
+oz_1_sm <- thin(oz_1) # switch to thinned version
+oz_1_sm <- oz_1_sm %>% mutate(
+  numPoly = geometry %>% purrr::map_dbl(.f = length) 
+)
+head(oz_1_sm$numPoly)
+```
+
+---
+
+# Setting up a Before picture
+
+```{r}
+ggplot() + geom_sf(data = oz_1_sm[1,])
+```
+
+---
+
+```{r}
+length(oz_1_sm$geometry[[1]])
+oz_1_sm$geometry[[1]][[1]] # each element is a list itself
+```
+---
+
+
+```{r}
+oz_1_sm <- oz_1_sm %>% mutate(
+  data = 1:length(geometry) %>% purrr::map(.f = function(i) {
+    g <- geometry[[i]]
+    res <- g %>% purrr::map_df(.id="i", .f = function(gelement) {
+      as.data.frame(gelement[[1]]) 
+    })
+    
+    res$group <- paste0(i,"-",res$i)
+    res
+  })
+)
+```
+---
+
+# Compare to Before pic
+
+```{r}
+oz_1_sm$data[[1]] %>%
+  ggplot(aes(x =x, y = y, group = group)) + geom_polygon()
+```
+---
+
+Still to do: unnest the data, rename variables, introduce order variable

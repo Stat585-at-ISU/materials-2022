@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lab Assignment #2: Exploring the world</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Heike Hofmann" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lab Assignment #2: Exploring the world
+### Heike Hofmann
+
+---
+
+
+# Couple of extra hints
+
+- GADM shapefiles and Australia
+
+- matrices
+
+
+---
+
+# GADM shapefiles
+
+Link: https://gadm.org/download_country_v3.html provides access to a lot of different countries
+
+Various formats for shapefiles are available
+
+  - zipped folder with files: Shapefiles 
+  - R binary (rds) for each level 0, 1, 2
+  
+Levels describe country (0), states or territories (1), and counties or other districts (2)
+  
+  
+---
+
+# Australia - download zipped folder
+
+Download file from a path, unzip it and view the contents: 
+
+```r
+# download
+zipped &lt;- "https://biogeo.ucdavis.edu/data/gadm3.6/shp/gadm36_AUS_shp.zip"
+download.file(zipped, destfile="data/gadm36_AUS.zip", mode="wb")
+
+# unzip
+unzip("data/gadm36_AUS.zip", exdir ="data/gadm36_AUS/")
+
+# view shapefiles (extension .shp)
+dir("data/gadm36_AUS/", pattern = "shp")
+```
+
+```
+## [1] "gadm36_AUS_0.shp" "gadm36_AUS_1.shp" "gadm36_AUS_2.shp"
+```
+
+---
+
+# Read shape files for all levels 
+
+
+
+```r
+library(sf)
+```
+
+```
+## Linking to GEOS 3.9.1, GDAL 3.4.0, PROJ 8.1.1; sf_use_s2() is TRUE
+```
+
+```r
+oz_0 &lt;- read_sf("data/gadm36_AUS/gadm36_AUS_0.shp")
+oz_1 &lt;- read_sf("data/gadm36_AUS/gadm36_AUS_1.shp")
+oz_2 &lt;- read_sf("data/gadm36_AUS/gadm36_AUS_2.shp")
+```
+
+Shapefiles can be quite big -  look at their size first before plotting
+
+
+```r
+library(maptools)
+object.size(as(oz_0, "Spatial"))
+```
+
+```
+## 29823704 bytes
+```
+
+```r
+object.size(as(oz_1, "Spatial"))
+```
+
+```
+## 33121384 bytes
+```
+
+```r
+object.size(as(oz_2, "Spatial"))
+```
+
+```
+## 56690040 bytes
+```
+---
+
+# Thinning spatial structure
+
+Thinning algorithm (Douglas-Pecker algorithm) reduces the number of nodes in a polygon (works similar to smoothing by removing some of the small scale structure).
+
+Too much thinning will result in unrecognizable objects.
+
+
+
+```r
+thin &lt;- function(x, tolerance = 0.1, minarea = 0.01) {
+  xx &lt;- maptools::thinnedSpatialPoly(
+    as(x$geometry, "Spatial"), 
+    tolerance, minarea , topologyPreserve = TRUE)
+  x$geometry &lt;- st_as_sf(xx)$geometry
+  x
+}
+
+object.size(oz_0)
+```
+
+```
+## 21477576 bytes
+```
+
+```r
+object.size(thin(oz_0))
+```
+
+```
+## 5101736 bytes
+```
+
+---
+
+# Plot the shape files 
+
+
+```r
+library(ggplot2)
+library(patchwork)
+p0 &lt;- ggplot() + 
+  geom_sf(data = thin(oz_0), colour = "red") + ggtitle("Level 0")
+p1 &lt;- ggplot() +  
+  geom_sf(data = thin(oz_1), colour = "blue") + ggtitle("Level 1")
+p2 &lt;- ggplot() + 
+  geom_sf(data = thin(oz_2), colour = "purple") + ggtitle("Level 2")
+p0+p1+p2
+```
+
+![](02_lab-plus_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+---
+
+# RDS files
+
+Work extremey similar to the shapefiles - download rds file at level of choice, thin, and plot: 
+
+```r
+# download
+rds_0 &lt;- "https://biogeo.ucdavis.edu/data/gadm3.6/Rsp/gadm36_AUS_0_sp.rds"
+download.file(rds_0, destfile="data/rds_0.rds", mode="wb")
+ozrds_0 &lt;- readRDS("data/rds_0.rds")
+
+class(ozrds_0)
+```
+
+```
+## [1] "SpatialPolygonsDataFrame"
+## attr(,"package")
+## [1] "sp"
+```
+
+
+```r
+ggplot() + 
+  geom_sf(data = thin(st_as_sf(ozrds_0)))
+```
+
+![](02_lab-plus_files/figure-html/unnamed-chunk-7-1.png)&lt;!-- --&gt;
+
+---
+
+# Inner workings
+
+Polygons are made up of sets of points containing geographic latitude and longitude, individual objects (such as e.g. Michigan) can be made up of multiple polygons.
+
+
+```r
+library(dplyr)
+oz_1_sm &lt;- thin(oz_1) # switch to thinned version
+oz_1_sm &lt;- oz_1_sm %&gt;% mutate(
+  numPoly = geometry %&gt;% purrr::map_dbl(.f = length) 
+)
+head(oz_1_sm$numPoly)
+```
+
+```
+## [1]   7   1  25   3 247 212
+```
+
+---
+
+# Setting up a Before picture
+
+
+```r
+ggplot() + geom_sf(data = oz_1_sm[1,])
+```
+
+![](02_lab-plus_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+
+```r
+length(oz_1_sm$geometry[[1]])
+```
+
+```
+## [1] 7
+```
+
+```r
+oz_1_sm$geometry[[1]][[1]] # each element is a list itself
+```
+
+```
+## [[1]]
+##             x         y
+## [1,] 123.5556 -12.53057
+## [2,] 123.5554 -12.53213
+## [3,] 123.5524 -12.53137
+## [4,] 123.5536 -12.53039
+## [5,] 123.5556 -12.53057
+```
+---
+
+
+
+```r
+oz_1_sm &lt;- oz_1_sm %&gt;% mutate(
+  data = 1:length(geometry) %&gt;% purrr::map(.f = function(i) {
+    g &lt;- geometry[[i]]
+    res &lt;- g %&gt;% purrr::map_df(.id="i", .f = function(gelement) {
+      as.data.frame(gelement[[1]]) 
+    })
+    
+    res$group &lt;- paste0(i,"-",res$i)
+    res
+  })
+)
+```
+---
+
+# Compare to Before pic
+
+
+```r
+oz_1_sm$data[[1]] %&gt;%
+  ggplot(aes(x =x, y = y, group = group)) + geom_polygon()
+```
+
+![](02_lab-plus_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+---
+
+Still to do: unnest the data, rename variables, introduce order variable
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
