@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Stat 585 - Debugging</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Heike Hofmann" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="tweaks.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Stat 585 - Debugging
+### Heike Hofmann
+
+---
+
+class: center, middle
+
+
+
+![](https://imgs.xkcd.com/comics/fixing_problems.png)
+
+
+---
+class: center, middle
+
+# So, you've got an error?
+
+---
+
+## Tools
+
+- `traceback()` - the sequence of calls that led to the error
+    - runs after you've gotten the error
+- Setting breakpoints
+- `browser()` - open an interactive session at an arbitrary breakpoint
+    - can be used to create conditional breakpoints
+- `debug()` - open an interactive session where the error occurred
+    - RStudio has a `rerun with debug` option
+
+### Or... Low Tech
+
+- `print()` statements
+- going line-by-line through the code interactively
+
+&lt;br/&gt;&lt;br/&gt;
+.small[
+Useful References: 
+- Chapters [Condition handling](https://adv-r.hadley.nz/conditions.html) and [Debugging](https://adv-r.hadley.nz/debugging.html) by Hadley Wickham
+- [RStudio Debugging Tools](https://support.rstudio.com/hc/en-us/articles/205612627-Debugging-with-RStudio)
+]
+
+---
+
+## First go to when you get an unexpected result
+
+Placing output such as
+
+- `cat()`
+- `str()`
+- `head()`
+- `summary()`
+- `print()`
+
+in strategic places in functions,
+are simple ways to build code up step-wise ensuring that each piece works (and figuring out where it fails)
+
+---
+
+## Example: Read code
+
+What does this function do? How does it work?
+
+
+```r
+somefunction &lt;- function (...) 
+{
+    k &lt;- length(ll &lt;- list(...))
+    if (k == 0L) 
+        return(invisible())
+    mc &lt;- match.call()
+    for (i in 1L:k) if (!(is.logical(r &lt;- ll[[i]]) &amp;&amp; !any(is.na(r)) &amp;&amp; 
+        all(r))) {
+        ch &lt;- deparse(mc[[i + 1]], width.cutoff = 60L)
+        if (length(ch) &gt; 1L) 
+            ch &lt;- paste(ch[1L], "....")
+        stop(paste(ch, " is not ", if (length(r) &gt; 1L) 
+            "all ", "TRUE", sep = ""), call. = FALSE)
+    }
+    invisible()
+}
+```
+
+&lt;!-- precursor of the stopifnot function --&gt;
+
+---
+
+## Step-by-step code checking
+
+The `browser()` function allows stepping through your code.
+
+
+```r
+help(browser)
+```
+
+- `n`= executes the next line of code
+
+- `s`= step into next line. Same as `n` except if the line is a function. Will step into function
+
+- `f` = finish execution of this loop
+
+- `c`= continue execution until the end of the function, and exit
+
+- `where` gives you the stack information, the trace of the active function calls
+
+- `Q` exits browser()
+
+---
+
+## Let's try browser()
+
+`somefunction2()` function has `browser()` in first line of function
+
+
+```r
+somefunction2 &lt;- function (...) 
+{
+    browser()
+    k &lt;- length(ll &lt;- list(...))
+    if (k == 0L) 
+        return(invisible())
+    mc &lt;- match.call()
+    for (i in 1L:k) if (!(is.logical(r &lt;- ll[[i]]) &amp;&amp; !any(is.na(r)) &amp;&amp; 
+        all(r))) {
+        ch &lt;- deparse(mc[[i + 1]], width.cutoff = 60L)
+        if (length(ch) &gt; 1L) 
+            ch &lt;- paste(ch[1L], "....")
+        stop(paste(ch, " is not ", if (length(r) &gt; 1L) 
+            "all ", "TRUE", sep = ""), call. = FALSE)
+    }
+    invisible()
+}
+```
+
+---
+
+
+```r
+x &lt;- 1
+somefunction2(x==x, 1+1==2, c(7+5==11.99999, 1+1==2))
+```
+
+Browser enables:
+
+- printing of result of each line
+
+- checking changes to values
+
+- make sure that it results in what is expected
+
+---
+
+## `debug()`
+
+- `debug(f)` &lt;br&gt;
+automatically places a `browser()` statement in the first line of function `f`, i.e. browser starts every time the function `f` is being executed
+
+- `undebug(f)` &lt;br&gt;
+removes it.
+
+-  `debugonce(f)` &lt;br&gt;
+Convenient alternative: starts the browser the next time function `f` is being executed
+
+
+---
+
+## Setting error handling
+
+
+- `options(error=recover)` will drop user into `browser()` upon an error
+
+- `options(error=NULL)` default, do nothing
+
+- `options(warn=2)` sets maximum number of warnings to be 2
+
+- `options(warn=0)` warnings are stored until top level function finishes (default)
+
+- `options(warn=-1)` ignore all warnings
+
+---
+
+## Entering Debug Mode - Breakpoints
+
+1. Set Breakpoints in your functions with Shift+F9 or by clicking on the left of the line number    
+![:scale 50%](https://support.rstudio.com/hc/en-us/article_attachments/201608458/editor-breakpoint.png)
+
+2. 
+    - __Inside a function__ Run the computation that causes the error - debug mode should be triggered at the breakpoint
+    - __Outside a function__ Source the function with `debugSource()` in RStudio
+
+---
+
+## Traceback
+
+`traceback()` shows the stack at the time the last error occurred
+
+```
+&gt; library(nonpackage)
+Error in library(nonpackage) : there is no package called ‘nonpackage’
+&gt; traceback()
+2: stop(txt, domain = NA)
+1: library(nonpackage)
+```
+
+---
+
+## Traceback - Example
+
+
+```r
+f &lt;- function(x) { 
+  w(x)
+	g(h(x)) 
+	w(x)
+} 
+g &lt;- function(x) {
+	a &lt;- 10
+	x
+} 
+
+h &lt;- function(x) {
+	w(x) 
+	w(x) 
+}
+	 
+w &lt;- function(x) { 
+	if (sample(10, 1) == 1) stop("This is an error!")
+}
+
+f() 
+traceback()
+```
+
+---
+
+## Traceback
+
+  
+```
+&gt; f()
+Error in w(x) : This is an error! 
+&gt; traceback()
+5: stop("This is an error!") at #2
+4: w(x) at #2
+3: h(x) at #3
+2: g(h(x)) at #3
+1: f()
+```
+---
+class: inverse
+## Your Turn: fix this!! 
+
+`larger(x,y)` is supposed to return the element-wise maximum of two vectors
+
+
+```r
+larger &lt;- function(x, y) { 
+  y.is.bigger &lt;- y &gt; x 
+	x[y.is.bigger] &lt;- y[y.is.bigger] 
+	x
+} 
+larger(c(1, 5, 10), c(2, 4, 11)) 
+```
+
+```
+## [1]  2  5 11
+```
+
+```r
+larger(c(1, 5, 10), 6)
+```
+
+```
+## [1]  6 NA 10
+```
+why is there an `NA` in the second example? It should be a 6. Figure out why this happens, and try to fix it.
+
+---
+class:inverse
+## Your Turn .tiny[.shift-right[From [Advanced R](http://adv-r.had.co.nz/Exceptions-Debugging.html#debugging-answers)]]
+
+This function should compute the mean of all numeric columns: 
+
+```r
+col_means &lt;- function(df) {
+  numeric &lt;- sapply(df, is.numeric)
+  numeric_cols &lt;- df[, numeric]
+
+  data.frame(lapply(numeric_cols, mean))
+}
+```
+
+Which of the following results are incorrect? Can you modify `col_means()` to be more robust to unusual inputs?
+
+
+```r
+col_means(mtcars)
+col_means(mtcars[, 0])
+col_means(mtcars[0, ])
+col_means(mtcars[, "mpg", drop = F])
+col_means(1:10)
+col_means(as.matrix(mtcars))
+col_means(as.list(mtcars))
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
