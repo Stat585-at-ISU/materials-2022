@@ -246,7 +246,7 @@ Can you get those to work for your example? Test with ggplotly.
 
 ```{r}
 countryList <- gapminder %>% mutate(year = year-1950) %>% 
-  nest(-country, -continent) 
+  nest(data = c(-country, -continent))
 countryList 
 ```
 
@@ -421,7 +421,7 @@ The opposite of `nest` is `unnest`:
 
 ```{r}
 coefs <- countryList %>% select(country, continent, coefs) %>% 
-  unnest()
+  unnest(cols = coefs)
 coefs
 ```
 
