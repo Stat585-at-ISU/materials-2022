@@ -1,0 +1,222 @@
+---
+title: "Stat 585 - Writing debuggable code"
+author: "Susan Vanderplas and Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, default-fonts, "tweaks.css"]
+    nature:
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: center, middle
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+![](https://imgs.xkcd.com/comics/fixing_problems.png)
+
+
+---
+
+## Writing Code for Easy Debugging
+
+1. Format your code well (`styler` package is useful)
+
+--
+2. Leave comments 
+    - describe what the code is supposed to be doing
+
+    - what the input is supposed to be
+
+    - what the output should look like    
+    ...For each functional unit of code
+
+--
+3. Check inputs and verify outputs
+    - `stopifnot()` in base R
+
+    - `assertthat` package (https://github.com/hadley/assertthat)
+
+        - error signaling, input validation, better error messages
+
+    - `checkmate` package (https://github.com/mllg/checkmate)
+
+        - fast and concise input validation
+        
+---
+
+## `assertthat`
+
+Compare the error messages:
+
+```{r, error = T}
+stopifnot(is.character(1:10))
+
+
+library(assertthat)
+assert_that(is.character(1:10))
+```
+
+
+---
+
+## Other `assertthat` functions
+
+function | purpose
+-------- | -------
+`is.flag(x)` | is `x` `TRUE` or `FALSE`? (a boolean flag)
+`is.string(x)` | is `x` a length 1 character vector?
+`has_name(x, nm)` | does `x` have a component named `nm`?
+`has_attr(x, attr)` | does `x` have attribute `attr`?
+`is.count(x)` | is `x` a single positive integer?
+`not_empty(x)` | are all dimensions of `x` greater than 0?
+`noNA(x)` | is `x` free from missing values?
+`is.dir(path)` | is `path` a directory?
+`is.writeable(path)` | is `path` writeable?
+`is.readable(path)` | is `path` readable?
+`has_extension(path, ext)` | does `file` have the specified extension `ext`?
+
+---
+class:inverse
+## Your Turn
+
+Use `assertthat` functions to check inputs and output for the col_means function, ensuring that they make sense.
+
+```{r}
+col_means <- function(df) {
+  numeric <- sapply(df, is.numeric)
+  numeric_cols <- df[, numeric]
+
+  data.frame(lapply(numeric_cols, mean))
+}
+```
+
+Finished? 
+
+Upload your function to [gist.github.com](https://gist.github.com) (an easy way to share short code files) and share in zoom (or with your neighbor). Download your neighbor's code (or someone else's gist in zoom). Can you cause their function to return an unexpected result?
+
+1 Extra point for sharing your gist! 1 more point for breaking somebody else's code and putting it into our Canvas Discussion forum.
+---
+
+## Your Turn - solution
+
+This is not an exhaustive list of checks...
+
+```{r}
+library(assertthat)
+
+col_means <- function(df) {
+  assert_that(
+    is.data.frame(df), # Check input is a data frame
+    not_empty(df) # Check that df has at least one row and column
+  )
+  numeric <- sapply(df, is.numeric)
+  assert_that(length(numeric) > 0) # >= one numeric column
+  
+  numeric_cols <- df[, numeric]
+  # ensure numeric_cols has at least one row and column
+  assert_that(length(dim(numeric)) == 2) 
+  list_res <- lapply(numeric_cols, mean)
+  res <- data.frame(list_res)
+  assert_that(
+    is.data.frame(res), # output is data frame
+    are_equal(ncol(res), length(numeric_cols)) # correct # cols
+  )
+  
+  res
+}
+```
+
+---
+
+## `checkmate`
+
+Package `checkmate` implements assertions and checks for speedy evalution ...
+
+Goals: 
+
+- Faster (C backend)
+
+- Better memory handling - no intermediate objects created
+
+- Single call to check e.g. length, missingness, and lower/upper bounds (more concise)
+
+(Preview...) Also interfaces with `testthat` for unit tests.
+
+---
+
+## `checkmate`
+
+- `assert*` : single statement to check type, length, type-specific attrs     
+also `assert_*` if you prefer that syntax
+    - Throw an error if the check fails
+    
+    - Checked object returned invisibly on success
+        - can be used with pipes!
+
+- `test*` return TRUE or FALSE - best used to combine different checks
+
+- `expect*` functions to be used in unit tests
+
+- `check*` functions
+    - return error message as a string if the conditions fail
+
+    - return TRUE otherwise
+
+    - used in `assert*`, `test*`, `expect*` functions
+  
+
+---
+class:inverse
+## Your Turn
+
+Use `checkmate` functions to check inputs and output for the `col_means` function, ensuring that they make sense.
+
+```{r}
+col_means <- function(df) {
+  numeric <- sapply(df, is.numeric)
+  numeric_cols <- df[, numeric]
+
+  data.frame(lapply(numeric_cols, mean))
+}
+```
+
+Finished? 
+
+Upload your function to [gist.github.com](https://gist.github.com) (an easy way to share short code files) and download your neighbor's code. Download your neighbor's code (or someone else's gist in zoom). Can you cause their function to return an unexpected result?
+
+1 Extra point for sharing your gist! 1 more point for breaking somebody else's code and putting it into our Canvas Discussion forum.
+
+
+---
+
+## Your Turn - solution
+
+This is not an exhaustive list of checks...
+
+```{r}
+library(checkmate)
+
+col_means <- function(df) {
+  assert_data_frame(df, min.rows = 1, min.cols = 1) # Check input is a data frame
+  
+  numeric <- sapply(df, is.numeric)
+  assert_atomic_vector(numeric, min.len = 1) # >= one numeric col
+  
+  numeric_cols <- df[, numeric]
+  assert_data_frame(df, min.rows = 1, min.cols = 1) # numeric_cols is a data frame
+  
+  list_res <- lapply(numeric_cols, mean)
+  res <- data.frame(list_res)
+  assert_data_frame(
+    res, # output is data frame
+    ncols = length(numeric_cols) # correct # cols
+  ) 
+  
+  res
+}
+```
