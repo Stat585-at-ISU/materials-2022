@@ -66,9 +66,12 @@ The `usethis` package allows you to directly connect a project to git and github
 
 ## Data in a package
 
-- Data frames must be stored in the `data` folder using the command `save`.
+Assume we have the data frame `mydata` (you might consider using a better name :)).
 
-- Data the `usethis` way:
+- Data frames must be stored in the `data` folder. Use the command `save` and make sure to set the path to write into the folder `data`. Then you need to start the documentation ...
+
+- Data the `usethis` way: `use_data(mydata)`. This will use the information of the RStudio project to save things into the proper path and give you a reminder what to do next.
+
 
 ```
 use_data

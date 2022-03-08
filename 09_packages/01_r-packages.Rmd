@@ -188,13 +188,23 @@ Rd files are clearly structured, yet, we DO NOT want to write these ourselves (w
 
 ## The documentation workflow
 
+First: Prep the DESCRIPTION file by adding the line 
+
+```
+Roxygen: list(markdown = TRUE)
+```
+
+
 1. Add tags  to your .R files in form of roxygen (next slide) comments
 
 2. Run `devtools::document()` (or press `Ctrl/Cmd + Shift + D` in RStudio) to convert roxygen comments to .Rd files. 
 
 3. Preview documentation with `?`.
 
-4. Rinse and repeat until the documentation looks the way you want.
+4. Rinse and repeat 1-3 until the documentation looks the way you want.
+
+
+Additional help: [roxygen2 documentation](https://roxygen2.r-lib.org/articles/markdown.html)
 
 ---
 
@@ -229,9 +239,6 @@ instead, they write to `NAMESPACE`
 
 - `@importFrom` makes the imported function from the specified package visible (a more limited version of `@import`)
 
---
-
-Note that Import in the DESCRIPTION file and `@import` for NAMESPACE aren't related - same word, two totally separate concepts
 
 ---
 
@@ -267,6 +274,8 @@ class: inverse
 ## Your Turn 
 
 - Delete the file `hello.Rd` in the folder `man`
+
+- Prep the DESCRIPTION file by adding the Roxygen tag.
 
 - Include roxygen comments for the function `hello()` in the file `hello.R` to create the same help for `hello` as was there before.
 
