@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Lab Assignment #3: Wrapping the world in a package</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Heike Hofmann" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Lab Assignment #3: Wrapping the world in a package
+### Heike Hofmann
+
+---
+
+
+# Outline
+
+- Creating an R package
+
+- Cleaning up last lab's code and wrapping it in functions
+
+- Writing some tests and documentation
+
+
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+
+The final deliverable is a link to your team's github repository containing a functional R package that passes checking without any errors, warnings or notes. 
+
+For the purpose of grading, I will install the package, make sure that it passes checking, and try to break your code with a couple of tests :)
+
+
+---
+
+# Lab organization
+
+1. Follow the Github Classroom invite and join the team you are assigned to in Canvas (one of Team 1 through 8)
+
+2. Accepting the invite gives you access to a Github repository that was created using `usethis` functionality `create_package` and `use_readme_rmd`. 
+
+3. A function `thin(x, tolerance = 0.1, minarea = 0.01)` is included in file `thin.r` in the `R` folder. Additionally, the folder `lab2-scripts` contains scripts `team-1.r`, ..., `team-6.r` with solutions from the last lab.
+
+4. This repository is supposed to provide the basis for your R package.
+
+
+---
+
+# Last time ...
+
+... you were asked to write a function that allowed you to create a data frame from 
+a `geometry` variable
+
+# This time:
+
+- each team member is asked to pick the solution to last time's lab (available from the `lab2-scripts` folder) from a different team (and not the team they were on)
+
+- wrap the solution into a function of the form
+
+`team_X &lt;- function(file, tolerance)` where `X` is the solution for team X used,  file is a file path to a shape file and 
+tolerance is the value used for thinning the polygon
+
+
+The return value is a data frame of the geographic information of the polygons and the additional information (such as name of the country, name of the territory/state, ...)
+
+---
+
+# Data
+
+Include one example dataset in your package (pick one country and get everything into the right shape).
+
+Dont forget to document the function.
+
+# Documentation
+
+Using roxygen tags, appropriately document function `team_X`. (Don't forget about the `thin` function)
+
+Include at least one example for every function of the package.
+
+# Assertions
+
+Make sure to include checks at the start of your function to make it as unbreakable as you can and have it working as intended in as many situations as you can think of.
+
+---
+
+# README.Rmd
+
+Your README file is supposed to give an overview of the functionality of your package, i.e. it should include installation instructions and an example for each function. 
+
+# Checks
+
+The function `devtools::check()` runs all of the tests required by CRAN maintainer. 
+Your package is supposed to pass these checks without any errors, warnings or notes.
+
+Make sure to browse the web for answers in case of problems and don't forget about our Q&amp;A discussion board! Extra points and candy are on the line!
+
+# Everybody participates!
+
+Remember that github keeps track of who submits what - I expect that every team member contributes to the lab. 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
