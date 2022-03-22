@@ -1,0 +1,269 @@
+---
+title: 'Lab Assignment #3 - Recap'
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse, middle, center
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, echo = TRUE)
+```
+# A systems engineer walks into a bar ...
+
+---
+class: inverse
+# ... 
+
+- he orders a beer
+
+- he orders 9,999,999 beers
+
+- he orders -1 beers
+
+- he orders C5F63A beers
+
+- he orders a lizard
+
+---
+class: inverse
+# the first real customer enters the bar
+
+... and asks where the bathroom is.
+
+
+--
+
+<br> <br> <br>
+
+The bar catches fires, explodes and kills everyone ????????????
+
+<br> <br> <br>
+
+[Thanks Reddit](https://www.reddit.com/r/Jokes/comments/a4a4jc/a_software_qa_engineer_walks_into_a_bar/)
+
+
+---
+
+# What I will do to your package
+
+1. download repo from github 
+
+2. install and run checks 
+
+3. run an example:
+
+```{r eval = FALSE}
+library(tidyverse)
+library(pkg_name)
+oz <- team_X("path to some shp file")
+oz %>% 
+  ggplot(aes(x = long, y = lat, group = group)) +
+  geom_polygon(aes(fill = NAME_1))
+```
+
+4. run your examples 
+
+5. knit your README.Rmd file and read through it
+
+6. run some additional examples
+
+---
+
+## Why do we do this to you?
+
+- expectation: all of the checks work without problems.
+
+- If the above is not true, use our previous method: 
+ when you encounter a problem, make a note of it and put it into the Readme file. 
+ (comes with a deduction of points)
+
+- this lab is a technical test run for the final project
+
+- new due date: tonight, 11:59pm
+
+
+---
+
+## Final project
+
+it looks like you are all set for the final project
+
+Next deliverable: Stage 2 (by Apr 14, not graded): Functional Package
+
+---
+
+# How do things look like?
+
+```
+── R CMD check results ──────────────────────────────────────── Lab3package 0.0.0.9000 ────
+Duration: 25s
+
+> checking R code for possible problems ... NOTE
+  plot_shapefile: no visible binding for global variable ‘lat’
+  team_1 : get_df: no visible binding for global variable ‘.’
+  team_1: no visible binding for global variable ‘.’
+  team_3: no visible binding for global variable ‘.’
+  team_5 : func.oz: no visible binding for global variable ‘geometry’
+  ...
+  Undefined global functions or variables:
+    . ENGTYPE_1 NAME_0 NAME_1 data district geometry group lat long
+  Consider adding
+    importFrom("utils", "data")
+  to your NAMESPACE file.
+
+0 errors ✓ | 0 warnings ✓ | 1 note x
+```
+---
+
+# Generally ....
+
+
+- Do **NOT** use any global file paths, i.e. file names of the form: `C:/Downloads/project/lab-2-lab2-team2/data/gadm36_AUS_shp/gadm36_AUS_1.shp`
+
+
+Citing [Jenny Bryan](https://github.com/jennybc/here_here#admitting-you-have-a-problem):
+
+> If the first line of your #rstats script is setwd("C:\Users\jenny\path\that\only\I\have"), I will come into your lab and SET YOUR COMPUTER ON FIRE.
+
+More [rage tweets](https://twitter.com/JennyBryan/status/673240213313851393)
+
+<br><br>
+
+- Do not use spaces in file names:
+
+```
+> checking for portable file names ... WARNING
+  Found the following file with a non-portable file name:
+    R/team 4.R
+  These are not fully portable file names.
+```  
+
+
+---
+
+# Dependencies
+
+```
+> checking dependencies in R code ... WARNING
+  'library' or 'require' calls not declared from:
+    ‘dplyr’ ‘ggplot2’ ‘purrr’ ‘sf’
+  'library' or 'require' calls in package code:
+    ‘dplyr’ ‘ggplot2’ ‘purrr’ ‘sf’
+    Please use :: or requireNamespace() instead.
+    See section 'Suggested packages' in the 'Writing R Extensions' manual.
+```
+
+Do **NOT** put calls to `library()` into any function code. 
+
+Function `fff` from package `xyz` are made available by 
+
+1. Placing  package `xyz` in the DESCRIPTION file (under Imports)
+2. using the roxygen tag `#' @importFrom xyz fff` where the function is used
+
+---
+
+# No visible binding ...
+
+```
+> checking R code for possible problems ... NOTE
+  plot_shapefile: no visible binding for global variable ‘lat’
+  team_1 : get_df: no visible binding for global variable ‘.’
+```
+
+For `lat`: simple solution: include the line in the function (before `lat` is used):
+
+```
+lat <- NULL 
+```
+
+Other solutions and some explanations for the  [no visible binding ](https://www.r-bloggers.com/2019/08/no-visible-binding-for-global-variable/) problems
+
+--
+
+Use `.data` instead of `.`, e.g.  
+
+More on [use .data not .](https://dplyr.tidyverse.org/articles/programming.html)
+
+---
+
+# Make use of file .Rbuildignore
+
+```
+> checking for hidden files and directories ... NOTE
+  Found the following hidden files and directories:
+    .github/.keep
+    .github
+  These were most likely included in error. See section ‘Package
+  structure’ in the ‘Writing R Extensions’ manual.
+
+> checking top-level files ... NOTE
+  Non-standard files/directories found at top level:
+    ‘README.Rmd’ ‘lab2-scripts’
+```
+
+Expand file .Rbuildignore and include README files, github content. Delete lab2-scripts?
+
+```
+^.*\.Rproj$
+^\.Rproj\.user$
+^README.*  # ignore all files that start with README
+^.github$
+```
+---
+
+# Data examples
+
+```
+> team_2("data/gadm40_AUS_shp/gadm40_AUS_1.shp",0.01)
+  Error: Cannot open "data/gadm40_AUS_shp/gadm40_AUS_1.shp"; The file doesn't seem to exist.
+  Execution halted
+  
+> checking package subdirectories ... WARNING
+  Subdirectory ‘data’ contains no data sets.
+
+> checking contents of ‘data’ directory ... WARNING
+  Files not of a type allowed in a ‘data’ directory:
+    ‘gadm40_AUS_shp’
+  Please use e.g. ‘inst/extdata’ for non-R data files  
+```
+
+Where to place the data for your example?
+
+For your example you will need a set of five files: cpg, dbf, prj, shp, and shx
+
+Place non-R data in the folder `inst`
+
+During the installation all elements of `inst` are placed in a special location on your machine.
+
+For example, to find `inst/extdata/mydata.csv`, you'd call `system.file("extdata", "mydata.csv", package = "mypackage")`
+
+---
+
+# Example of an example
+
+Assume you have the australia files in a folder called `extdata` in folder `inst`
+
+The example then should be:
+```{r eval=FALSE}
+ozfilepath <- system.file("extdata/gadm36_AUS_1.shp", ".shp", package = "mypackage")
+ozdata <- team_X(ozfilepath, tolerance=0.1)
+```
+
+---
+
+# Another solution to incorporate data
+
+save spatial data frame as rda object, i.e. for thinned Australia shapes `oz`:
+
+```
+usethis::use_data(oz)
+```
+
+Then use `data(oz)` in your examples.
+
+Needs to be documented in file data.r
