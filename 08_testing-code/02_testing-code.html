@@ -44,11 +44,19 @@ This set of slides is going to cover a lot of ground - current best practices fo
 
 ## Setting up for today
 
-- Fork the R package `wordle` from https://github.com/Stat585-at-ISU/worldle to your github account. 
 
-- Copy the address (under the green button, looks something like `git@github.com:XXX/worldle.git`) where `XXX` is your github handle
+In your RStudio console run the line: 
 
-- From inside Rstudio create a new R project using the link you copied
+`create_from_github("git@github.com:Stat585-at-ISU/worldle.git", fork = TRUE)`
+
+What does this do?
+
+  - Forks the R package `wordle` from https://github.com/Stat585-at-ISU/worldle to your github account. 
+
+  - Creates a new R project `worldle` on your machine
+  
+
+What should you do now?
 
 - Install the package: `devtools::install()`
 
