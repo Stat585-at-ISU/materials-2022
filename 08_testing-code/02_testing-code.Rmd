@@ -44,7 +44,7 @@ In your RStudio console run the line:
 
 `create_from_github("git@github.com:Stat585-at-ISU/worldle.git", fork = TRUE)`
 
-What does this do?
+What does this do (see [section 24.5, Jenny Bryan's "Happy git ..."](https://happygitwithr.com/common-remote-setups.html#fork-them) for details)?
 
   - Forks the R package `wordle` from https://github.com/Stat585-at-ISU/worldle to your github account. 
 
@@ -54,6 +54,40 @@ What does this do?
 What should you do now?
 
 - Install the package: `devtools::install()`
+
+---
+
+# Remotes
+
+Difference between remote origin and remote upstream: 
+
+remote origin is your repo, remote upstream is the repo you forked 
+
+![](remotes-fork.png)
+
+---
+
+# Remotes (Checking that they are the problem)
+
+In the terminal run `git remote -v` 
+
+```{r eval=FALSE}
+(base) heike-mbpro16:worldle hofmann$ git remote -v
+origin  https://github.com/heike/worldle.git (fetch)
+origin  https://github.com/heike/worldle.git (push)
+upstream        https://github.com/Stat585-at-ISU/worldle.git (fetch)
+upstream        https://github.com/Stat585-at-ISU/worldle.git (push)
+```
+
+`edit_git_config(scope="project")` 
+
+In line 12 change `remote = upstream` to `remote = origin`. Save the file. Now  your pushes go to *your*  repo:
+
+```{r eval = FALSE}
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+```	
 
 ---
 
