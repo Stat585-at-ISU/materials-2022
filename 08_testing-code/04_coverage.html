@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Stat 585 - Testing Your Code</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Heike Hofmann and Susan Vanderplas" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="tweaks.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Stat 585 - Testing Your Code
+### Heike Hofmann and Susan Vanderplas
+
+---
+
+
+
+
+
+## Outline
+
+
+- Automatic Testing and Checking with github actions
+
+- Earning all the badges 
+
+
+---
+class:middle,center
+# Continuous Integration 
+
+
+
+
+???
+The next step in this process is to make it easy to check the package. Running check() can get pretty tedious, so let's set up continuous integration - basically, a system that will check our package every time we push changes to GitHub. 
+
+---
+
+## Motivation
+
+The package build - modify - test cycle can be tedious. 
+
+Sometimes, your package is written in a way that depends on your R environmpent. 
+
+How do you determine if things will work on a different computer?
+
+--
+
+You test the package build/install process as well!
+
+
+???
+Instead of forgetting to run things every time we make a change, we're going to set things up automatically. 
+
+
+---
+
+## Continuous Integration
+
+`usethis::use_github_actions()` run check on every commit you push
+  
+
+```r
+&gt; usethis::use_github_actions()
+✓ Setting active project to '/Users/hofmann/Desktop/worldle'
+✓ Creating '.github/'
+✓ Adding '^\\.github$' to '.Rbuildignore'
+✓ Adding '*.html' to '.github/.gitignore'
+✓ Creating '.github/workflows/'
+✓ Saving 'r-lib/actions/examples/check-release.yaml@v1' to '.github/workflows/R-CMD-check.yaml'
+• Learn more at &lt;https://github.com/r-lib/actions/blob/v1/examples/README.md&gt;.
+Which repo should we target? 
+  
+1: heike/worldle = 'origin'
+2: Stat585-at-ISU/worldle = 'upstream'
+
+Selection: 1
+✓ Adding R-CMD-check badge to 'README.Rmd'
+• Re-knit 'README.Rmd'
+```
+
+???
+  The travis workflow is pretty sweet - a small configuration file, and your test environment will be automatically set up, it will install all of your dependencies, build your package, run all of your test, and then calculate code coverage to see how much of your code is covered by your unit tests (we'll get to that in a minute, but it's pretty sweet.)
+
+---
+class:inverse
+## Your Turn
+
+1. Set up github actions for your `worldle` repository
+
+2. Add the `.github` folder to the repo. 
+
+2. Push the changes and check that the build is working on your repo.
+
+???
+So go ahead and try it out.
+---
+
+## Continuous Integration
+
+&lt;blockquote class="twitter-tweet" data-lang="en"&gt;&lt;p lang="en" dir="ltr"&gt;Things are going great; why do you ask?! &lt;a href="https://twitter.com/hashtag/rstats?src=hash&amp;amp;ref_src=twsrc%5Etfw"&gt;#rstats&lt;/a&gt; 
+
+&lt;img width="80%" src="https://pbs.twimg.com/media/CgbixfuVAAAWgZn.jpg"&gt;
+
+
+&lt;/p&gt;&amp;mdash; Julia Silge (@juliasilge) &lt;a href="https://twitter.com/juliasilge/status/722514130968535042?ref_src=twsrc%5Etfw"&gt;April 19, 2016&lt;/a&gt;&lt;/blockquote&gt;
+&lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8"&gt;&lt;/script&gt;
+
+Travis is another version of Continuous Integration (now replaced by Github Actions)
+
+It is so sweet to see this: ![](https://github.com/heike/worldle/workflows/R-CMD-check/badge.svg)
+
+???
+Travis (another Continuous Integration system) can be frustrating. When you do actually get it working, though, it feels really awesome.
+
+---
+
+# Another badge: coverage
+
+
+```r
+# Enable codecov.io with your github account
+# This requires travis integration, but generates coverage reports
+#   automatically with every change you push to the github repo
+usethis::use_coverage(type = "codecov")
+```
+
+Output: 
+
+```r
+✓ Adding 'covr' to Suggests field in DESCRIPTION
+✓ Writing 'codecov.yml'
+✓ Adding '^codecov\\.yml$' to '.Rbuildignore'
+✓ Adding Codecov test coverage badge to 'README.Rmd'
+• Re-knit 'README.Rmd'
+• Call `use_github_action("test-coverage")` to continuously monitor test coverage.
+```
+
+---
+
+# Earning that coverage badge
+
+The follow the suggestion to add the corresponding github action:
+
+
+```r
+use_github_action("test-coverage")
+```
+
+
+```r
+✓ Saving 'r-lib/actions/examples/test-coverage.yaml@v1' to '.github/workflows/test-coverage.yaml'
+• Learn more at &lt;https://github.com/r-lib/actions/blob/v1/examples/README.md&gt;.
+```
+
+Add files to your repo and push. 
+Re-build your website, push the changes and enjoy :)
+
+---
+
+# Badges for licenses
+
+Look up your [preferred license](https://gist.github.com/lukas-h/2a5d00690736b4c3a7ba)
+and display on your README page
+
+---
+
+# What about a hex logo?
+
+Check out package `hexSticker` and get creative.
+
+Once you have an image file, add it to your README on the website by running the command:
+
+
+```r
+usethis::use_logo()
+```
+
+
+---
+
+# Resources
+
+- [Github actions](https://github.com/r-lib/actions)  for R, 
+- Jim Hester's [talk and slides](https://www.jimhester.com/talk/2020-rsc-github-actions/)
+- [Short book](https://orchid00.github.io/actions_sandbox/) Github actions for R
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
