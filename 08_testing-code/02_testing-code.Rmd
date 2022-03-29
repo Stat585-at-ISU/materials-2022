@@ -69,14 +69,14 @@ remote origin is your repo, remote upstream is the repo you forked
 
 # Remotes (Checking that they are the problem)
 
-In the terminal run `git remote -v` 
-
 ```{r eval=FALSE}
-(base) heike-mbpro16:worldle hofmann$ git remote -v
-origin  https://github.com/heike/worldle.git (fetch)
-origin  https://github.com/heike/worldle.git (push)
-upstream        https://github.com/Stat585-at-ISU/worldle.git (fetch)
-upstream        https://github.com/Stat585-at-ISU/worldle.git (push)
+usethis::git_remotes()
+✓ Setting active project to '/Users/hofmann/Desktop/worldle'
+$origin
+[1] "https://github.com/heike/worldle.git"
+
+$upstream
+[1] "https://github.com/Stat585-at-ISU/worldle.git"
 ```
 
 `edit_git_config(scope="project")` 
