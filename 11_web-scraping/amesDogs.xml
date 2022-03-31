@@ -1,0 +1,1200 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<petfinder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://api.petfinder.com/schemas/0.9/petfinder.xsd">
+ <header>
+  <version>0.1</version>
+  <timestamp>2019-04-01T19:49:55Z</timestamp>
+  <status>
+   <code>100</code>
+   <message />
+  </status>
+ </header>
+ <lastOffset>25</lastOffset>
+ <pets>
+  <pet>
+   <id>44357159</id>
+   <shelterId>IA197</shelterId>
+   <shelterPetId>A009861</shelterPetId>
+   <name>CJ</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Terrier</breed>
+    <breed>Mixed Breed</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Young</age>
+   <sex>M</sex>
+   <size>M</size>
+   <options></options>
+   <description><![CDATA[]]></description>
+   <lastUpdate>2019-03-31T13:17:18Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44357159/1/?bust=1554042287&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44357159/1/?bust=1554042287&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44357159/1/?bust=1554042287&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44357159/1/?bust=1554042287&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44357159/1/?bust=1554042287&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>325 Billy Sunday Rd</address1>
+    <address2 />
+    <city>Ames</city>
+    <state>IA</state>
+    <zip>50010</zip>
+    <phone>(515) 239-5530</phone>
+    <fax />
+    <email>animalsinames@cityofames.org</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44221165</id>
+   <shelterId>IL524</shelterId>
+   <shelterPetId />
+   <name>Penny</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Jack Russell Terrier</breed>
+    <breed>Chihuahua</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Adult</age>
+   <sex>F</sex>
+   <size>S</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[Penny is a mature adult, likely between 5-10 years old, who looks like she has had litters of puppies in the past.  She was found as a stray and no one came for her, so she was brought into our rescue!  She is mostly housebroken, and does love to chase cats (although she won't hurt them, just pesters them).  She gets along great with other dogs, but has shown to be the dominant one over toys, bones, and food.  
+
+Penny loves to go for walks and will let out a bark for every person she sees pass her by!  She loves to say hi to everyone.  She is being fostered in Ames, IA.  
+
+If interested in adopting Penny, please fill out an adoption application on our website at www.castawaypetrescue.org]]></description>
+   <lastUpdate>2019-03-13T17:41:37Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44221165/1/?bust=1552498865&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44221165/1/?bust=1552498865&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44221165/1/?bust=1552498865&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44221165/1/?bust=1552498865&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44221165/1/?bust=1552498865&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>AmesIowa</address1>
+    <address2 />
+    <city>Ames</city>
+    <state>IA</state>
+    <zip>50010</zip>
+    <phone />
+    <fax />
+    <email>castawaypetrescue@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44246551</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2019019</shelterPetId>
+   <name>Franco</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Labrador Retriever</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>M</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+   </options>
+   <description><![CDATA[Hi, I am Franco. I am probably the biggest goofball you will meet at BAHS. I am always excited to see you and will love running and playing with you in our new yard. I want to be on the go and active... all the time. I am good with other dogs and just want to run and play with them too.]]></description>
+   <lastUpdate>2019-03-16T18:26:54Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44246551/1/?bust=1554056522&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44246551/1/?bust=1554056522&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44246551/1/?bust=1554056522&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44246551/1/?bust=1554056522&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44246551/1/?bust=1554056522&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44246551/2/?bust=1554056536&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44246551/2/?bust=1554056536&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44246551/2/?bust=1554056536&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44246551/2/?bust=1554056536&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44246551/2/?bust=1554056536&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>43705332</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2018136</shelterPetId>
+   <name>Jazz</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Pit Bull Terrier</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Young</age>
+   <sex>F</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+   </options>
+   <description><![CDATA[Hi, my name is Jazz. I am so much fun, I love to jump and play. I may be what some call "hyper" when you see me in my kennel, but don't let that fool you, once I get outside I calm down and love to have all of your attention. I play nicely with other dogs my size.... oh looks squirrel.....
+
+This sweet girl loves attention! She is still working on her manners (she can jump up and be mouthy), but would be a great companion for someone who is willing to do some training with her!]]></description>
+   <lastUpdate>2019-01-06T11:43:25Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/43705332/1/?bust=1554056520&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/43705332/1/?bust=1554056520&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/43705332/1/?bust=1554056520&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/43705332/1/?bust=1554056520&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/43705332/1/?bust=1554056520&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/43705332/2/?bust=1554056551&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/43705332/2/?bust=1554056551&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/43705332/2/?bust=1554056551&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/43705332/2/?bust=1554056551&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/43705332/2/?bust=1554056551&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/43705332/3/?bust=1554056558&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/43705332/3/?bust=1554056558&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/43705332/3/?bust=1554056558&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/43705332/3/?bust=1554056558&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/43705332/3/?bust=1554056558&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44183114</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>O2019005</shelterPetId>
+   <name>Dory</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Shih Tzu</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>F</sex>
+   <size>S</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+    <option>noDogs</option>
+    <option>noCats</option>
+    <option>noKids</option>
+   </options>
+   <description><![CDATA[Hey everyone, meet Dory. Dory is a sweet girl who was an owner surrender. Dory isn't fond of other animals getting in her space. She most definitely has a personal bubble and will nip at those who aren't welcome. However, after she gets to know you and knows she can trust you she welcomes all the head scratches you're willing to give. Dory's foster mom thinks that she would do best in a home where Dory can be the center of attention and with no young kids. Dory is approx 7 years old and looking to find her forever home. She does ok with other dogs as long as they don't get in her face and cats are not a problem. Once she is used to the surroundings she is content with other animals. She just prefers to not be jumped on by them and she isn't afraid to let them know who is in charge. Do you think you would be a good fit for her? Please call BAHS to set up an appointment to meet Dory.]]></description>
+   <lastUpdate>2019-03-08T17:07:20Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44183114/1/?bust=1554056527&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44183114/1/?bust=1554056527&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44183114/1/?bust=1554056527&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44183114/1/?bust=1554056527&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44183114/1/?bust=1554056527&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44183114/2/?bust=1554056546&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44183114/2/?bust=1554056546&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44183114/2/?bust=1554056546&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44183114/2/?bust=1554056546&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44183114/2/?bust=1554056546&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44183114/3/?bust=1554056559&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44183114/3/?bust=1554056559&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44183114/3/?bust=1554056559&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44183114/3/?bust=1554056559&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44183114/3/?bust=1554056559&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44336551</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>A2019019</shelterPetId>
+   <name>Hoss</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>American Bulldog</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>M</sex>
+   <size>XL</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+   </options>
+   <description><![CDATA[]]></description>
+   <lastUpdate>2019-03-28T18:52:33Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44336551/1/?bust=1554056524&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44336551/1/?bust=1554056524&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44336551/1/?bust=1554056524&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44336551/1/?bust=1554056524&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44336551/1/?bust=1554056524&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44336551/2/?bust=1554056537&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44336551/2/?bust=1554056537&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44336551/2/?bust=1554056537&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44336551/2/?bust=1554056537&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44336551/2/?bust=1554056537&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44336551/3/?bust=1554056561&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44336551/3/?bust=1554056561&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44336551/3/?bust=1554056561&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44336551/3/?bust=1554056561&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44336551/3/?bust=1554056561&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>43925084</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>A2018066</shelterPetId>
+   <name>Emma</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Shepherd</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>F</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+    <option>noCats</option>
+   </options>
+   <description><![CDATA[Emma will take time to trust new people. Once she puts her butt in the air and her head on the ground, though, you know you have found a loyal friend for life! She loves having her butt scratched and tummy rubbed. Adopters should be prepared to continue counter-conditioning to new people.]]></description>
+   <lastUpdate>2019-02-02T23:14:22Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/43925084/1/?bust=1554056537&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/43925084/1/?bust=1554056537&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/43925084/1/?bust=1554056537&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/43925084/1/?bust=1554056537&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/43925084/1/?bust=1554056537&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/43925084/2/?bust=1554056514&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/43925084/2/?bust=1554056514&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/43925084/2/?bust=1554056514&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/43925084/2/?bust=1554056514&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/43925084/2/?bust=1554056514&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/43925084/3/?bust=1554056554&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/43925084/3/?bust=1554056554&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/43925084/3/?bust=1554056554&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/43925084/3/?bust=1554056554&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/43925084/3/?bust=1554056554&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>43738565</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D20177015</shelterPetId>
+   <name>Fred</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Hound</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Senior</age>
+   <sex>M</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[]]></description>
+   <lastUpdate>2019-01-10T16:08:11Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/43738565/1/?bust=1554056528&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/43738565/1/?bust=1554056528&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/43738565/1/?bust=1554056528&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/43738565/1/?bust=1554056528&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/43738565/1/?bust=1554056528&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/43738565/2/?bust=1554056535&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/43738565/2/?bust=1554056535&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/43738565/2/?bust=1554056535&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/43738565/2/?bust=1554056535&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/43738565/2/?bust=1554056535&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/43738565/3/?bust=1554056556&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/43738565/3/?bust=1554056556&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/43738565/3/?bust=1554056556&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/43738565/3/?bust=1554056556&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/43738565/3/?bust=1554056556&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44246549</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2019016</shelterPetId>
+   <name>Holly</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Shepherd</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>F</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[If looking into Holly's eyes doesn't make you fall in love her BIG personality will. Holly loves to play fetch and just play in general. However, she has no brakes and will run to you full speed when called. Holly would love a home where she can be the center of attention and with older kids who can handle her rambunctious behavior.]]></description>
+   <lastUpdate>2019-03-16T18:26:54Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44246549/1/?bust=1554056521&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44246549/1/?bust=1554056521&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44246549/1/?bust=1554056521&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44246549/1/?bust=1554056521&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44246549/1/?bust=1554056521&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44246549/2/?bust=1554056538&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44246549/2/?bust=1554056538&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44246549/2/?bust=1554056538&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44246549/2/?bust=1554056538&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44246549/2/?bust=1554056538&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44246549/3/?bust=1554056556&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44246549/3/?bust=1554056556&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44246549/3/?bust=1554056556&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44246549/3/?bust=1554056556&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44246549/3/?bust=1554056556&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44336550</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2019023</shelterPetId>
+   <name>Penny</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Black Mouth Cur</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Young</age>
+   <sex>F</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+   </options>
+   <description><![CDATA[Penny is a Black Mouth Cur and true to her breed she will a great family pet. Black Mouth Curs love to work. They are tenacious and courageous, traits that make them ideal hunting and cattle dogs.They are also loyal, protective, and affectionate with their families.
+
+Penny is full of energy and wants to run and play as soon as you open her kennel door. She would be great with an active family that has a fenced in yard for her to roam.]]></description>
+   <lastUpdate>2019-03-28T18:52:33Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44336550/1/?bust=1554056533&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44336550/1/?bust=1554056533&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44336550/1/?bust=1554056533&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44336550/1/?bust=1554056533&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44336550/1/?bust=1554056533&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44336550/2/?bust=1554056552&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44336550/2/?bust=1554056552&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44336550/2/?bust=1554056552&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44336550/2/?bust=1554056552&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44336550/2/?bust=1554056552&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44336550/3/?bust=1554056557&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44336550/3/?bust=1554056557&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44336550/3/?bust=1554056557&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44336550/3/?bust=1554056557&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44336550/3/?bust=1554056557&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44336552</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2019024</shelterPetId>
+   <name>Dewey</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Hound</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>M</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+   </options>
+   <description><![CDATA[]]></description>
+   <lastUpdate>2019-03-28T18:52:33Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44336552/1/?bust=1554056531&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44336552/1/?bust=1554056531&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44336552/1/?bust=1554056531&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44336552/1/?bust=1554056531&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44336552/1/?bust=1554056531&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44336552/2/?bust=1554056545&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44336552/2/?bust=1554056545&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44336552/2/?bust=1554056545&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44336552/2/?bust=1554056545&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44336552/2/?bust=1554056545&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44194074</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>A2018082</shelterPetId>
+   <name>Logan</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Labrador Retriever</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>M</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>noCats</option>
+   </options>
+   <description><![CDATA[No cats]]></description>
+   <lastUpdate>2019-03-09T23:57:34Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44194074/1/?bust=1554056530&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44194074/1/?bust=1554056530&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44194074/1/?bust=1554056530&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44194074/1/?bust=1554056530&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44194074/1/?bust=1554056530&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44194074/2/?bust=1554056534&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44194074/2/?bust=1554056534&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44194074/2/?bust=1554056534&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44194074/2/?bust=1554056534&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44194074/2/?bust=1554056534&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44194074/3/?bust=1554056553&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44194074/3/?bust=1554056553&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44194074/3/?bust=1554056553&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44194074/3/?bust=1554056553&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44194074/3/?bust=1554056553&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44336553</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2019026</shelterPetId>
+   <name>Marshmallow fka Sativa</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Pit Bull Terrier</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>F</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+    <option>noCats</option>
+   </options>
+   <description><![CDATA[]]></description>
+   <lastUpdate>2019-03-28T18:52:33Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44336553/1/?bust=1554056529&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44336553/1/?bust=1554056529&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44336553/1/?bust=1554056529&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44336553/1/?bust=1554056529&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44336553/1/?bust=1554056529&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44336553/2/?bust=1554056548&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44336553/2/?bust=1554056548&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44336553/2/?bust=1554056548&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44336553/2/?bust=1554056548&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44336553/2/?bust=1554056548&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44121266</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2019013</shelterPetId>
+   <name>Geddy</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Coonhound</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Adult</age>
+   <sex>M</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+   </options>
+   <description><![CDATA["My names Geddy, and I'm a Hound Dog!" Adopt sweet Geddy and you will get a dog full of silly personality. His big ears and feet will make you smile as you watch him run across your yard to sniff out that pesky rabbit he just saw. Geddy does great with other dogs his size and really just wants to roam the yard and do his thing. Geddy isn't too sure about those cats at the shelter, he gets his big hound dog Aroooo going when he sees them. Anyone looking to adopt pure joy has found it in Geddy.]]></description>
+   <lastUpdate>2019-02-28T16:10:07Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44121266/1/?bust=1554056518&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44121266/1/?bust=1554056518&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44121266/1/?bust=1554056518&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44121266/1/?bust=1554056518&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44121266/1/?bust=1554056518&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44121266/2/?bust=1554098058&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44121266/2/?bust=1554098058&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44121266/2/?bust=1554098058&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44121266/2/?bust=1554098058&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44121266/2/?bust=1554098058&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44121266/3/?bust=1554056553&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44121266/3/?bust=1554056553&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44121266/3/?bust=1554056553&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44121266/3/?bust=1554056553&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44121266/3/?bust=1554056553&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44336549</id>
+   <shelterId>IA06</shelterId>
+   <shelterPetId>D2019015</shelterPetId>
+   <name>LuLu</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Labrador Retriever</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Young</age>
+   <sex>F</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+    <option>noDogs</option>
+    <option>noCats</option>
+   </options>
+   <description><![CDATA[Needs to be only animal]]></description>
+   <lastUpdate>2019-03-28T18:52:33Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44336549/1/?bust=1554056517&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44336549/1/?bust=1554056517&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44336549/1/?bust=1554056517&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44336549/1/?bust=1554056517&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44336549/1/?bust=1554056517&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>226 W. 16th Street</address1>
+    <address2>P.O. Box 495</address2>
+    <city>Boone</city>
+    <state>IA</state>
+    <zip>50036</zip>
+    <phone>(515) 432-6112</phone>
+    <fax />
+    <email>adopt.bahs@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44186801</id>
+   <shelterId>IA91</shelterId>
+   <shelterPetId />
+   <name>BGR Chewbacca</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Greyhound</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Young</age>
+   <sex>M</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[Meet Chewbacca, he is learning the live after retirement.  He is doing well in a home with cats and another greyhound.  He is doing stairs and loves car rides!
+If you would like to meet this dog, please e-mail HGA at adopt@heartlandgreyhoundadoption.org or call 515-967-6564 (please leave a message) and we will get back to you as soon as possible with more information. The adoption fee for greyhounds through HGA is $275. This fee pays for medical costs including spay/neuter surgery, shots, parasite treatments, and teeth cleaning. HGA also microchips every greyhound prior to adoption as a permanent form of ID. The additional cost for this service is $10.99 which covers the chip, activation, and membership and is a substantial savings over the usual cost for microchipping. Each dog also comes with a special sighthound collar and leash set and muzzle. There is a $25 non-refundable application fee that is applied to an approved adoption.]]></description>
+   <lastUpdate>2019-03-09T03:48:42Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44186801/1/?bust=1552103121&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44186801/1/?bust=1552103121&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44186801/1/?bust=1552103121&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44186801/1/?bust=1552103121&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44186801/1/?bust=1552103121&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>PO Box 342</address1>
+    <address2 />
+    <city>Bondurant</city>
+    <state>IA</state>
+    <zip>50035</zip>
+    <phone />
+    <fax />
+    <email>shelter-IA91@petfinder.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44186849</id>
+   <shelterId>IA91</shelterId>
+   <shelterPetId />
+   <name>BGR C Three P O</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Greyhound</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Young</age>
+   <sex>M</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[Winter weather updates for meet & greets and other events: In case of inclement winter weather, check the Heartland Greyhound Adoption Facebook page for last-minute updates. Or follow us on Facebook and have those updates delivered to your newsfeed!
+If you would like to meet this dog, please e-mail HGA at adopt@heartlandgreyhoundadoption.org or call 515-967-6564 (please leave a message) and we will get back to you as soon as possible with more information. The adoption fee for greyhounds through HGA is $275. This fee pays for medical costs including spay/neuter surgery, shots, parasite treatments, and teeth cleaning. HGA also microchips every greyhound prior to adoption as a permanent form of ID. The additional cost for this service is $10.99  which covers the chip, activation, and membership and is a substantial savings over the usual cost for microchipping. Each dog also comes with a special sighthound collar and leash set and muzzle. There is a $25 non-refundable application fee that is applied to an approved adoption.]]></description>
+   <lastUpdate>2019-03-09T04:20:22Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44186849/1/?bust=1552105197&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44186849/1/?bust=1552105197&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44186849/1/?bust=1552105197&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44186849/1/?bust=1552105197&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44186849/1/?bust=1552105197&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>PO Box 342</address1>
+    <address2 />
+    <city>Bondurant</city>
+    <state>IA</state>
+    <zip>50035</zip>
+    <phone />
+    <fax />
+    <email>shelter-IA91@petfinder.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44186838</id>
+   <shelterId>IA91</shelterId>
+   <shelterPetId />
+   <name>Superior Cinch</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Greyhound</breed>
+   </breeds>
+   <mix>no</mix>
+   <age>Senior</age>
+   <sex>F</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>hasShots</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[If you would like to meet this dog, please e-mail HGA at adopt@heartlandgreyhoundadoption.org or call 515-967-6564 (please leave a message) and we will get back to you as soon as possible with more information. The adoption fee for senior greyhounds age 7 and older  through HGA is $200. This fee pays for medical costs including spay/neuter surgery, shots, parasite treatments, and teeth cleaning. HGA also microchips every greyhound prior to adoption as a permanent form of ID. The additional cost for this service is $10.99 which covers the chip, activation, and membership and is a substantial savings over the usual cost for microchipping. Each dog also comes with a special sighthound collar and leash set and muzzle. There is a $25 non-refundable application fee that is applied to an approved adoption.]]></description>
+   <lastUpdate>2019-03-09T04:15:29Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44186838/1/?bust=1552104884&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44186838/1/?bust=1552104884&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44186838/1/?bust=1552104884&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44186838/1/?bust=1552104884&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44186838/1/?bust=1552104884&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44186838/2/?bust=1552104896&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44186838/2/?bust=1552104896&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44186838/2/?bust=1552104896&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44186838/2/?bust=1552104896&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44186838/2/?bust=1552104896&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1>PO Box 342</address1>
+    <address2 />
+    <city>Bondurant</city>
+    <state>IA</state>
+    <zip>50035</zip>
+    <phone />
+    <fax />
+    <email>shelter-IA91@petfinder.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44208274</id>
+   <shelterId>IA229</shelterId>
+   <shelterPetId>14147217</shelterPetId>
+   <name>Keija</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Labrador Retriever</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Adult</age>
+   <sex>F</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[If you would like to meet Keija, please apply https://hopeanimalrescueofiowa.duplie.com/forms/196/dog-application]]></description>
+   <lastUpdate>2019-03-12T02:44:41Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44208274/1/?bust=1552736145&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44208274/1/?bust=1552736145&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44208274/1/?bust=1552736145&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44208274/1/?bust=1552736145&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44208274/1/?bust=1552736145&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44208274/2/?bust=1552367865&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44208274/2/?bust=1552367865&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44208274/2/?bust=1552367865&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44208274/2/?bust=1552367865&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44208274/2/?bust=1552367865&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44208274/3/?bust=1552367869&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44208274/3/?bust=1552367869&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44208274/3/?bust=1552367869&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44208274/3/?bust=1552367869&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44208274/3/?bust=1552367869&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1 />
+    <address2 />
+    <city>Johnston</city>
+    <state>IA</state>
+    <zip>50131</zip>
+    <phone />
+    <fax />
+    <email>HARofIowa@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44098081</id>
+   <shelterId>IA229</shelterId>
+   <shelterPetId>13885178</shelterPetId>
+   <name>Lucky</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Cattle Dog</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Adult</age>
+   <sex>M</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+    <option>housetrained</option>
+    <option>noKids</option>
+   </options>
+   <description><![CDATA[Hi! My name is Lucky! I am almost 2 years old and I am looking for my Furever home! I’m very energetic and love to play with my foster siblings! I would like a
+quiet home with no kids. Cats are okay though! I am trained by Bark Avenue and will need a strong leader in my home who recognizes my stress. If you’re interested in meeting me, please apply at hopeanimalrescueofiowa.org.
+]]></description>
+   <lastUpdate>2019-02-25T15:50:05Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44098081/1/?bust=1551609746&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44098081/1/?bust=1551609746&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44098081/1/?bust=1551609746&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44098081/1/?bust=1551609746&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44098081/1/?bust=1551609746&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44098081/2/?bust=1551609755&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44098081/2/?bust=1551609755&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44098081/2/?bust=1551609755&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44098081/2/?bust=1551609755&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44098081/2/?bust=1551609755&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44098081/3/?bust=1551609761&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44098081/3/?bust=1551609761&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44098081/3/?bust=1551609761&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44098081/3/?bust=1551609761&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44098081/3/?bust=1551609761&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1 />
+    <address2 />
+    <city>Johnston</city>
+    <state>IA</state>
+    <zip>50131</zip>
+    <phone />
+    <fax />
+    <email>HARofIowa@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44104617</id>
+   <shelterId>IA229</shelterId>
+   <shelterPetId>13966661</shelterPetId>
+   <name>Harper</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Boxer</breed>
+    <breed>Coonhound</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Adult</age>
+   <sex>F</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[Harper is a Boxer/Coon Hound mix approximately 1-2 yrs of age. If you are looking for a loyal best friend, you found her!! She will be VERY loyal to her owner an loves to lay on or beside you. She is a cuddler and will want to lay in your bed. She does well with cats and dogs that are her size or smaller (she does not do well with dogs larger than her) and loves playing with her foster fur siblings. She graduated from Bark Avenue 10 day basic training boot camp, so she has basic commands. We are working on getting some weight on her as she was found as a stray and very thin and abused, so it is amazing she is so loyal and sweet. She does well in a car. Children 10+ would be recommended for Harper as she is strong and can knock a small child over and homes without smaller critters (birds, hamsters, guinea pigs, etc.).
+
+If you would like to meet Harper, please complete an online application at http://hopeanimalrescueofiowa.org/forms/196/dog-application
+
+]]></description>
+   <lastUpdate>2019-02-26T09:49:00Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44104617/1/?bust=1553869296&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44104617/1/?bust=1553869296&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44104617/1/?bust=1553869296&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44104617/1/?bust=1553869296&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44104617/1/?bust=1553869296&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44104617/2/?bust=1553869298&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44104617/2/?bust=1553869298&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44104617/2/?bust=1553869298&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44104617/2/?bust=1553869298&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44104617/2/?bust=1553869298&amp;width=50&amp;-t.jpg</photo>
+     <photo id="3" size="pnt">http://photos.petfinder.com/photos/pets/44104617/3/?bust=1553869299&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="3" size="fpm">http://photos.petfinder.com/photos/pets/44104617/3/?bust=1553869299&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="3" size="x">http://photos.petfinder.com/photos/pets/44104617/3/?bust=1553869299&amp;width=500&amp;-x.jpg</photo>
+     <photo id="3" size="pn">http://photos.petfinder.com/photos/pets/44104617/3/?bust=1553869299&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="3" size="t">http://photos.petfinder.com/photos/pets/44104617/3/?bust=1553869299&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1 />
+    <address2 />
+    <city>Johnston</city>
+    <state>IA</state>
+    <zip>50131</zip>
+    <phone />
+    <fax />
+    <email>HARofIowa@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44271931</id>
+   <shelterId>IA229</shelterId>
+   <shelterPetId>14136702</shelterPetId>
+   <name>Sam</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Rat Terrier</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Young</age>
+   <sex>M</sex>
+   <size>S</size>
+   <options>
+    <option>altered</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[Rat Terrier - Male - Born 6/11/18
+
+My name is Sam. I am a 9 month old rat terrier mix and weigh about 25 lbs. If you are looking for an affectionate, sweet boy then I am him! I am also pretty much house trained too. If you don't let me on your furniture or in your bed then maybe we aren't a match. I just want to be touching my people all the time. I have to be in a kennel when my foster mom is gone and I try really hard not to go in, but I have to. Once I'm in there I just hang out. Luckily she doesn't make me go in there at night because I'm a good boy. I am shy when you first meet me especially with men, but given time I open up just fine. So far I get along with other dogs in my foster home, but I kind of stay out of the fray and keep to myself right now. There are cats in my foster home and I pretty much stay away from them too. I don't have any real experience with kids, but maybe if I met them and they were nice to me I would like them. My foster mom loves me and thinks I am the best and anyone would be lucky to have me!
+
+If you would like to meet, please complete an online application at http://hopeanimalrescueofiowa.org/forms/196/dog-application]]></description>
+   <lastUpdate>2019-03-20T08:23:34Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44271931/1/?bust=1553980822&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44271931/1/?bust=1553980822&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44271931/1/?bust=1553980822&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44271931/1/?bust=1553980822&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44271931/1/?bust=1553980822&amp;width=50&amp;-t.jpg</photo>
+     <photo id="2" size="pnt">http://photos.petfinder.com/photos/pets/44271931/2/?bust=1553980823&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="2" size="fpm">http://photos.petfinder.com/photos/pets/44271931/2/?bust=1553980823&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="2" size="x">http://photos.petfinder.com/photos/pets/44271931/2/?bust=1553980823&amp;width=500&amp;-x.jpg</photo>
+     <photo id="2" size="pn">http://photos.petfinder.com/photos/pets/44271931/2/?bust=1553980823&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="2" size="t">http://photos.petfinder.com/photos/pets/44271931/2/?bust=1553980823&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1 />
+    <address2 />
+    <city>Johnston</city>
+    <state>IA</state>
+    <zip>50131</zip>
+    <phone />
+    <fax />
+    <email>HARofIowa@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>43441680</id>
+   <shelterId>IA229</shelterId>
+   <shelterPetId>13796663</shelterPetId>
+   <name>Belle</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Doberman Pinscher</breed>
+    <breed>Doberman Pinscher</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Young</age>
+   <sex>F</sex>
+   <size>M</size>
+   <options>
+    <option>altered</option>
+   </options>
+   <description><![CDATA[Siblings - Moose, Astro, Sunny, and Izzy]]></description>
+   <lastUpdate>2018-12-03T02:21:19Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/43441680/1/?bust=1553926157&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/43441680/1/?bust=1553926157&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/43441680/1/?bust=1553926157&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/43441680/1/?bust=1553926157&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/43441680/1/?bust=1553926157&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1 />
+    <address2 />
+    <city>Johnston</city>
+    <state>IA</state>
+    <zip>50131</zip>
+    <phone />
+    <fax />
+    <email>HARofIowa@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44309444</id>
+   <shelterId>IA229</shelterId>
+   <shelterPetId>14189203</shelterPetId>
+   <name>Trinity</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Shepherd</breed>
+    <breed>Cattle Dog</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Young</age>
+   <sex>F</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[Trinity is a female Sheppard/Heeler Mix born in Oct'18. His adoption fee is $250.00
+
+If interested in meeting, please complete online application at https://hopeanimalrescueofiowa.duplie.com/forms/196/dog-application]]></description>
+   <lastUpdate>2019-03-25T02:31:21Z</lastUpdate>
+   <status>A</status>
+   <media>
+    <photos>
+     <photo id="1" size="pnt">http://photos.petfinder.com/photos/pets/44309444/1/?bust=1553926158&amp;width=60&amp;-pnt.jpg</photo>
+     <photo id="1" size="fpm">http://photos.petfinder.com/photos/pets/44309444/1/?bust=1553926158&amp;width=95&amp;-fpm.jpg</photo>
+     <photo id="1" size="x">http://photos.petfinder.com/photos/pets/44309444/1/?bust=1553926158&amp;width=500&amp;-x.jpg</photo>
+     <photo id="1" size="pn">http://photos.petfinder.com/photos/pets/44309444/1/?bust=1553926158&amp;width=300&amp;-pn.jpg</photo>
+     <photo id="1" size="t">http://photos.petfinder.com/photos/pets/44309444/1/?bust=1553926158&amp;width=50&amp;-t.jpg</photo>
+    </photos>
+   </media>
+   <contact>
+    <address1 />
+    <address2 />
+    <city>Johnston</city>
+    <state>IA</state>
+    <zip>50131</zip>
+    <phone />
+    <fax />
+    <email>HARofIowa@gmail.com</email>
+   </contact>
+  </pet>
+  <pet>
+   <id>44361311</id>
+   <shelterId>IA229</shelterId>
+   <shelterPetId>14210473</shelterPetId>
+   <name>Maggie</name>
+   <animal>Dog</animal>
+   <breeds>
+    <breed>Labrador Retriever</breed>
+   </breeds>
+   <mix>yes</mix>
+   <age>Young</age>
+   <sex>F</sex>
+   <size>L</size>
+   <options>
+    <option>altered</option>
+    <option>housetrained</option>
+   </options>
+   <description><![CDATA[Maggie is a female Lab mix born approx Mar'18 whose puppies were rescued as well and already adopted and now she is ready for her forever home.
+
+Adoption fee is $200 which includes altering, UTD on vaccines, and microchip.
+
+If you would like to meet, please complete an online application at
+
+https://hopeanimalrescueofiowa.duplie.com/forms/196/dog-application]]></description>
+   <lastUpdate>2019-04-01T04:43:12Z</lastUpdate>
+   <status>A</status>
+   <media></media>
+   <contact>
+    <address1 />
+    <address2 />
+    <city>Johnston</city>
+    <state>IA</state>
+    <zip>50131</zip>
+    <phone />
+    <fax />
+    <email>HARofIowa@gmail.com</email>
+   </contact>
+  </pet>
+ </pets>
+</petfinder>
