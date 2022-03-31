@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Stat 585 - APIs</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Heike Hofmann and Susan Vanderplas" />
+    <script src="libs/header-attrs-2.13/header-attrs.js"></script>
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="tweaks.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Stat 585 - APIs
+### Heike Hofmann and Susan Vanderplas
+
+---
+
+
+
+
+## Application Programming Interfaces (APIs)
+
+- A set of instructions and standards for accessing structured information on the web
+
+- A very convenient way to get data from the internet
+
+- Usually, takes the form:    
+`http://url.com?param1=value&amp;param2=value2`
+
+- Intended to make data available for other applications (e.g. developers of android apps, etc.)
+    - More convenient than scraping HTML directly
+    - Data is usually cleaner and better structured 
+
+---
+
+## Reading API Documentation
+
+Most APIs come with some documentation:
+
+- [Petfinder API](https://www.petfinder.com/developers/api-docs)
+
+- [NOAA API](https://www.ncdc.noaa.gov/cdo-web/webservices/v2)
+
+- [List of data.gov APIs](https://catalog.data.gov/dataset?q=-aapi+api+OR++res_format%3Aapi#topic=developers_navigation)
+
+The documentation will tell you about 
+
+- required authentication (and how to get an API key)
+- rate limits (how many requests you can make at a time)
+- query parameters and values
+
+
+---
+
+## API Authentication
+
+Many APIs will allow you to register and obtain an API key
+
+![](petfinder-api-key-secret.png)
+
+---
+
+## API Rate Limits
+
+APIs are a service provided for developers. Servers dedicated to these APIs are resource-limited, so be respectful of the data provider and the resource limits. 
+
+![](petfinder-api-limits.png)
+
+
+---
+
+## Getting Data
+
+![](petfinder-api-query.png)
+
+We will need to (1) Get our authorization token, then (2) build a request url: specify a category, then decide on an action, and any method search parameters
+
+---
+
+## Package `httr`
+
+allows us to work with the http protocol and map queries:
+
+
+```r
+httr::POST(
+  url = NULL,
+  config = list(),
+  ...,
+  body = NULL,
+  encode = c("multipart", "form", "json", "raw"),
+  handle = NULL
+)
+```
+
+POST allows us to let the website know about our 
+
+- **identity**: through the key and the secret
+- **preferences**: which encoding do we want for the results? 
+
+Result of a successful POST will contain our access token
+
+---
+
+## Getting the authorization token
+
+From the Petfinder website on getting an access token: 
+
+
+```r
+curl -d "grant_type=client_credentials&amp;client_id={CLIENT-ID}&amp;
+client_secret={CLIENT-SECRET}" https://api.petfinder.com/v2/oauth2/token
+```
+
+
+
+```r
+library(rvest)
+library(xml2)
+key &lt;- # Your key here
+secret &lt;- # Your secret here
+endpoint &lt;- 'oauth2/token'
+url &lt;- "https://api.petfinder.com/v2/"
+req &lt;- httr::POST(paste0(url, endpoint), 
+                  body = list("grant_type"="client_credentials", 
+                              "client_id" = key, 
+                              "client_secret" = secret),
+                  encode="json"
+)
+```
+
+Save the token:
+
+```r
+token &lt;- httr::content(req)$access_token 
+```
+
+---
+
+## Categories and methods
+
+
+```r
+curl -H "Authorization: Bearer {YOUR_ACCESS_TOKEN}" 
+GET https://api.petfinder.com/v2/{CATEGORY}/
+  {ACTION}?{parameter_1}={value_1}&amp;{parameter_2}={value_2}
+```
+
+
+Read through [categories](https://www.petfinder.com/developers/v2/docs/#get-animals), most general category: `animals`
+
+![:scale 70%](petfinder-animals.png)
+
+
+
+---
+class: inverse
+## Your Turn
+
+Assume, we want to find all of the cats that are good with children  closest to Ames (zip code 50010)
+
+Which search parameters do we need to specify? 
+
+What does the url look like?
+
+---
+
+## Your Turn - Solution
+
+cats are a *type*: type=cat
+
+good_with_children=true
+
+location=50010
+
+The search string is therefore: 
+
+
+```r
+animals?type=cat&amp;good_with_children=true&amp;location=50010
+```
+
+---
+
+## Method `GET` from package `httr`
+
+
+```r
+httr::GET(url = NULL, config = list(), ..., handle = NULL)
+```
+
+`url` is the url of the page we want
+
+`config` helps with additional setting - e.g `add_headers` for authorization
+
+---
+## Now get some actual data 
+
+
+```r
+# Now get actual data
+req_data &lt;- httr::GET(
+  paste0(url, "animals?type=dog&amp;location=50010"),
+  httr::add_headers(Authorization = paste0('Bearer ', token, sep = ''))
+  )
+```
+
+
+
+
+```r
+ames_dogs &lt;- httr::content(req_data, as = "parsed")
+str(ames_dogs)
+```
+
+```
+## List of 2
+##  $ animals   :List of 20
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55157760
+##   .. ..$ organization_id       : chr "IA36"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/summer-55157760/ia/waterloo/cedar-bend-humane-society-ia36/?referrer_id=befa6940-"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Labrador Retriever"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Young"
+##   .. ..$ gender                : chr "Female"
+##   .. ..$ size                  : chr "Medium"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: logi TRUE
+##   .. .. ..$ dogs    : logi TRUE
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  :List of 4
+##   .. .. ..$ : chr "Friendly"
+##   .. .. ..$ : chr "Affectionate"
+##   .. .. ..$ : chr "Gentle"
+##   .. .. ..$ : chr "Loves kisses"
+##   .. ..$ name                  : chr "Summer"
+##   .. ..$ description           : chr "MY STORY: Summer came to Cedar Bend Humane Society as a stray.\n\nAGE: Approximately 2.5 years.\n\nABOUT SUMMER: Bio coming..."
+##   .. ..$ organization_animal_id: NULL
+##   .. ..$ photos                :List of 5
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/2/?bust=1648670450&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/2/?bust=1648670450&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/2/?bust=1648670450&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/2/?bust=1648670450"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/3/?bust=1648670451&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/3/?bust=1648670451&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/3/?bust=1648670451&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/3/?bust=1648670451"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/4/?bust=1648670451&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/4/?bust=1648670451&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/4/?bust=1648670451&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/4/?bust=1648670451"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/5/?bust=1648670452&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/5/?bust=1648670452&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/5/?bust=1648670452&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/5/?bust=1648670452"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-31T13:27:08+0000"
+##   .. ..$ published_at          : chr "2022-03-31T13:27:08+0000"
+##   .. ..$ distance              : num 72.3
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "adoptioncounselor@yahoo.com"
+##   .. .. ..$ phone  : chr "(319) 232-6887"
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "1166 W Airline HWY"
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Waterloo"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50703"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55157760"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia36"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55163242
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/tiana-55163242/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=b"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Doberman Pinscher"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Female"
+##   .. ..$ size                  : chr "Medium"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Tiana"
+##   .. ..$ description           : chr "Primary Color: Black Secondary Color: Brown Weight: 82lbs Age: 4yrs 4mths 3wks Animal has been Spayed"
+##   .. ..$ organization_animal_id: chr "175937"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-31T13:16:58+0000"
+##   .. ..$ published_at          : chr "2022-03-31T13:16:58+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55163242"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55162877
+##   .. ..$ organization_id       : chr "IA227"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/artichoke-55162877/ia/johnston/forever-home-dog-rescue-ia227/?referrer_id=befa694"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Australian Cattle Dog / Blue Heeler"
+##   .. .. ..$ secondary: chr "American Staffordshire Terrier"
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Baby"
+##   .. ..$ gender                : chr "Female"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi FALSE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Artichoke"
+##   .. ..$ description           : chr "Meet Artie (Artichoke)! She is an almost 4 month old, petite staffy mix girl. We don&amp;amp;#39;t expect her to exceed..."
+##   .. ..$ organization_animal_id: chr "D2022009"
+##   .. ..$ photos                :List of 1
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-31T10:06:40+0000"
+##   .. ..$ published_at          : chr "2022-03-31T10:06:40+0000"
+##   .. ..$ distance              : num 25.5
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "adopt@foreverhomedogs.org"
+##   .. .. ..$ phone  : chr "(515) 270-2915"
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: NULL
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Johnston"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50131"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55162877"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia227"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55159982
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/turq-55159982/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=be"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Siberian Husky"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Young"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Turq"
+##   .. ..$ description           : chr "Primary Color: Tri Color Weight: 52.3lbs Age: 0yrs 9mths 3wks Animal has been Neutered"
+##   .. ..$ organization_animal_id: chr "213150"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T22:32:20+0000"
+##   .. ..$ published_at          : chr "2022-03-30T22:32:20+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55159982"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55159690
+##   .. ..$ organization_id       : chr "IA36"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/odie-55159690/ia/waterloo/cedar-bend-humane-society-ia36/?referrer_id=befa6940-e0"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Pit Bull Terrier"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Baby"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi FALSE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : logi TRUE
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  :List of 5
+##   .. .. ..$ : chr "Silly"
+##   .. .. ..$ : chr "Playful"
+##   .. .. ..$ : chr "Friendly"
+##   .. .. ..$ : chr "Funny"
+##   .. .. ..$ : chr "Loves Kisses"
+##   .. ..$ name                  : chr "Odie"
+##   .. ..$ description           : chr "MY STORY: Odie came to Cedar Bend Humane Society as a stray. \n\nAGE: Approximately 7 months\n\nCedar Bend Huma"| __truncated__
+##   .. ..$ organization_animal_id: NULL
+##   .. ..$ photos                :List of 4
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/2/?bust=1648677829&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/2/?bust=1648677829&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/2/?bust=1648677829&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/2/?bust=1648677829"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/3/?bust=1648677829&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/3/?bust=1648677829&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/3/?bust=1648677829&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/3/?bust=1648677829"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/4/?bust=1648677830&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/4/?bust=1648677830&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/4/?bust=1648677830&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/4/?bust=1648677830"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T22:03:51+0000"
+##   .. ..$ published_at          : chr "2022-03-30T22:03:51+0000"
+##   .. ..$ distance              : num 72.3
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "adoptioncounselor@yahoo.com"
+##   .. .. ..$ phone  : chr "(319) 232-6887"
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "1166 W Airline HWY"
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Waterloo"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50703"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55159690"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia36"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55157766
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/joe-55157766/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=bef"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Pit Bull Terrier"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Joe"
+##   .. ..$ description           : chr "Primary Color: White Secondary Color: Brown Weight: 71lbs Age: 4yrs 3mths 0wks Animal has been Neutered"
+##   .. ..$ organization_animal_id: chr "210793"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T20:02:26+0000"
+##   .. ..$ published_at          : chr "2022-03-30T20:02:26+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55157766"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55157546
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/chevy-55157546/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=b"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Pit Bull Terrier"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Chevy"
+##   .. ..$ description           : chr "BIG FAN OF: Running, playing and being goofy. He loves to zoom around our dog park and play with his..."
+##   .. ..$ organization_animal_id: chr "153376"
+##   .. ..$ photos                :List of 3
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/2/?bust=1648681044&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/2/?bust=1648681044&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/2/?bust=1648681044&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/2/?bust=1648681044"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/3/?bust=1648681045&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/3/?bust=1648681045&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/3/?bust=1648681045&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/3/?bust=1648681045"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T19:47:23+0000"
+##   .. ..$ published_at          : chr "2022-03-30T19:47:23+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55157546"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55157265
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/brock-55157265/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=b"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Pit Bull Terrier"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Brock"
+##   .. ..$ description           : chr "- Happy, active guy who loves his people and is up for anything \n\n- Can be fearful of strangers, so..."
+##   .. ..$ organization_animal_id: chr "164256"
+##   .. ..$ photos                :List of 5
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/2/?bust=1648680158&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/2/?bust=1648680158&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/2/?bust=1648680158&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/2/?bust=1648680158"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/3/?bust=1648680157&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/3/?bust=1648680157&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/3/?bust=1648680157&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/3/?bust=1648680157"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/4/?bust=1648680157&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/4/?bust=1648680157&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/4/?bust=1648680157&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/4/?bust=1648680157"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/5/?bust=1648680157&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/5/?bust=1648680157&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/5/?bust=1648680157&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/5/?bust=1648680157"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T19:32:23+0000"
+##   .. ..$ published_at          : chr "2022-03-30T19:32:23+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55157265"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55156581
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/carl-55156581/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=be"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Bloodhound"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Medium"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Carl"
+##   .. ..$ description           : chr "- Came from a situation where he did not get the socialization and exposure to the world that dogs typically..."
+##   .. ..$ organization_animal_id: chr "213730"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T18:47:11+0000"
+##   .. ..$ published_at          : chr "2022-03-30T18:47:11+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55156581"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155532
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/vito-55155532/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=be"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Akita"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Vito"
+##   .. ..$ description           : chr "Primary Color: Black Secondary Color: Grey Weight: 82.6lbs Age: 4yrs 9mths 2wks Animal has been Neutered"
+##   .. ..$ organization_animal_id: chr "188212"
+##   .. ..$ photos                :List of 4
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/2/?bust=1648661254&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/2/?bust=1648661254&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/2/?bust=1648661254&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/2/?bust=1648661254"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/3/?bust=1648661253&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/3/?bust=1648661253&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/3/?bust=1648661253&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/3/?bust=1648661253"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/4/?bust=1648661253&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/4/?bust=1648661253&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/4/?bust=1648661253&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/4/?bust=1648661253"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T17:17:24+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:17:24+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155532"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155531
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/luke-55155531/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=be"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Terrier"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Young"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Luke"
+##   .. ..$ description           : chr "- Loves playing ball! \n\n- Enjoys treats and takes them politely \n\n- Very busy dog who loves lots of mental..."
+##   .. ..$ organization_animal_id: chr "208618"
+##   .. ..$ photos                :List of 6
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/2/?bust=1648661251&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/2/?bust=1648661251&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/2/?bust=1648661251&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/2/?bust=1648661251"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/3/?bust=1648661253&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/3/?bust=1648661253&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/3/?bust=1648661253&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/3/?bust=1648661253"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/4/?bust=1648661251&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/4/?bust=1648661251&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/4/?bust=1648661251&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/4/?bust=1648661251"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/5/?bust=1648661254&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/5/?bust=1648661254&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/5/?bust=1648661254&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/5/?bust=1648661254"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/6/?bust=1648661252&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/6/?bust=1648661252&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/6/?bust=1648661252&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/6/?bust=1648661252"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T17:47:21+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:17:24+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155531"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155530
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/blue-55155530/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=be"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Pit Bull Terrier"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Young"
+##   .. ..$ gender                : chr "Female"
+##   .. ..$ size                  : chr "Medium"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Blue"
+##   .. ..$ description           : chr "Primary Color: Grey Secondary Color: White Weight: 36lbs Age: 0yrs 10mths 0wks Animal has been Spayed"
+##   .. ..$ organization_animal_id: chr "212885"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T17:17:23+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:17:23+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155530"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155330
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/bella-bonded-buddy-with-loki-55155330/ia/des-moines/animal-rescue-league-of-iowa-"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Redbone Coonhound"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Female"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Bella--Bonded Buddy With Loki"
+##   .. ..$ description           : chr "Primary Color: Brown Weight: 76lbs Age: 7yrs 1mths 3wks Animal has been Spayed"
+##   .. ..$ organization_animal_id: chr "212175"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T17:02:09+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:02:09+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155330"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155333
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/donnie-55155333/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id="| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Goldendoodle"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Donnie"
+##   .. ..$ description           : chr "- Came from a situation where he did not get the socialization and exposure to the world that dogs typically..."
+##   .. ..$ organization_animal_id: chr "213949"
+##   .. ..$ photos                :List of 3
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/2/?bust=1648673840&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/2/?bust=1648673840&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/2/?bust=1648673840&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/2/?bust=1648673840"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/3/?bust=1648685661&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/3/?bust=1648685661&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/3/?bust=1648685661&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/3/?bust=1648685661"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T17:02:09+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:02:09+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155333"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155334
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/wyatt-55155334/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=b"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Golden Retriever"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Medium"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Wyatt"
+##   .. ..$ description           : chr "- Came from a situation where he did not get the socialization and exposure to the world that dogs typically..."
+##   .. ..$ organization_animal_id: chr "213734"
+##   .. ..$ photos                :List of 1
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T21:47:16+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:02:09+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155334"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155331
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/fern-55155331/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=be"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Irish Setter"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Female"
+##   .. ..$ size                  : chr "Medium"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Fern"
+##   .. ..$ description           : chr "- Came from a situation where she did not get the socialization and exposure to the world that dogs typically..."
+##   .. ..$ organization_animal_id: chr "213733"
+##   .. ..$ photos                :List of 2
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/2/?bust=1648733233&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/2/?bust=1648733233&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/2/?bust=1648733233&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/2/?bust=1648733233"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T17:02:09+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:02:09+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155331"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55155329
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/loki-bonded-buddies-with-bella-55155329/ia/des-moines/animal-rescue-league-of-iow"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Rottweiler"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Loki--Bonded Buddies With Bella"
+##   .. ..$ description           : chr "Primary Color: Brown Weight: 75.5lbs Age: 5yrs 1mths 3wks Animal has been Neutered"
+##   .. ..$ organization_animal_id: chr "212176"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T17:02:08+0000"
+##   .. ..$ published_at          : chr "2022-03-30T17:02:08+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55155329"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55153667
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/big-boy-55153667/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Chow Chow"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Young"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Extra Large"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Big Boy"
+##   .. ..$ description           : chr "Primary Color: Black Secondary Color: White Weight: 96lbs Age: 1yrs 7mths 2wks Animal has been Neutered"
+##   .. ..$ organization_animal_id: chr "212337"
+##   .. ..$ photos                :List of 2
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/2/?bust=1648654052&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/2/?bust=1648654052&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/2/?bust=1648654052&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/2/?bust=1648654052"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T15:17:22+0000"
+##   .. ..$ published_at          : chr "2022-03-30T15:17:22+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55153667"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55152469
+##   .. ..$ organization_id       : chr "IA14"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/titan-55152469/ia/des-moines/animal-rescue-league-of-iowa-inc-ia14/?referrer_id=b"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "Pit Bull Terrier"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : NULL
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Adult"
+##   .. ..$ gender                : chr "Male"
+##   .. ..$ size                  : chr "Medium"
+##   .. ..$ coat                  : NULL
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi FALSE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: NULL
+##   .. .. ..$ dogs    : NULL
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  : list()
+##   .. ..$ name                  : chr "Titan"
+##   .. ..$ description           : chr "Primary Color: Black Secondary Color: White Age: 2yrs 0mths 0wks Animal has been Neutered"
+##   .. ..$ organization_animal_id: chr "214456"
+##   .. ..$ photos                : list()
+##   .. ..$ primary_photo_cropped : NULL
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T14:17:02+0000"
+##   .. ..$ published_at          : chr "2022-03-30T14:17:02+0000"
+##   .. ..$ distance              : num 26.2
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "social@arl-iowa.org"
+##   .. .. ..$ phone  : NULL
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "5452 N.E. 22nd St."
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Des Moines"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "50313"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55152469"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia14"
+##   ..$ :List of 26
+##   .. ..$ id                    : int 55152245
+##   .. ..$ organization_id       : chr "IA220"
+##   .. ..$ url                   : chr "https://www.petfinder.com/dog/lizzy-55152245/ia/tama/tama-county-humane-society-ia220/?referrer_id=befa6940-e07"| __truncated__
+##   .. ..$ type                  : chr "Dog"
+##   .. ..$ species               : chr "Dog"
+##   .. ..$ breeds                :List of 4
+##   .. .. ..$ primary  : chr "German Shepherd Dog"
+##   .. .. ..$ secondary: chr "Husky"
+##   .. .. ..$ mixed    : logi TRUE
+##   .. .. ..$ unknown  : logi FALSE
+##   .. ..$ colors                :List of 3
+##   .. .. ..$ primary  : chr "Tricolor (Brown, Black, &amp; White)"
+##   .. .. ..$ secondary: NULL
+##   .. .. ..$ tertiary : NULL
+##   .. ..$ age                   : chr "Young"
+##   .. ..$ gender                : chr "Female"
+##   .. ..$ size                  : chr "Large"
+##   .. ..$ coat                  : chr "Medium"
+##   .. ..$ attributes            :List of 5
+##   .. .. ..$ spayed_neutered: logi TRUE
+##   .. .. ..$ house_trained  : logi TRUE
+##   .. .. ..$ declawed       : NULL
+##   .. .. ..$ special_needs  : logi FALSE
+##   .. .. ..$ shots_current  : logi TRUE
+##   .. ..$ environment           :List of 3
+##   .. .. ..$ children: logi TRUE
+##   .. .. ..$ dogs    : logi TRUE
+##   .. .. ..$ cats    : NULL
+##   .. ..$ tags                  :List of 9
+##   .. .. ..$ : chr "Friendly"
+##   .. .. ..$ : chr "Affectionate"
+##   .. .. ..$ : chr "Loyal"
+##   .. .. ..$ : chr "Playful"
+##   .. .. ..$ : chr "Smart"
+##   .. .. ..$ : chr "Curious"
+##   .. .. ..$ : chr "Dignified"
+##   .. .. ..$ : chr "Loves kisses"
+##   .. .. ..$ : chr "Couch potato"
+##   .. ..$ name                  : chr "Lizzy"
+##   .. ..$ description           : NULL
+##   .. ..$ organization_animal_id: NULL
+##   .. ..$ photos                :List of 4
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/2/?bust=1648648288&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/2/?bust=1648648288&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/2/?bust=1648648288&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/2/?bust=1648648288"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/3/?bust=1648648289&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/3/?bust=1648648289&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/3/?bust=1648648289&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/3/?bust=1648648289"
+##   .. .. ..$ :List of 4
+##   .. .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/4/?bust=1648648289&amp;width=100"
+##   .. .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/4/?bust=1648648289&amp;width=300"
+##   .. .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/4/?bust=1648648289&amp;width=600"
+##   .. .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/4/?bust=1648648289"
+##   .. ..$ primary_photo_cropped :List of 4
+##   .. .. ..$ small : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287&amp;width=300"
+##   .. .. ..$ medium: chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287&amp;width=450"
+##   .. .. ..$ large : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287&amp;width=600"
+##   .. .. ..$ full  : chr "https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287"
+##   .. ..$ videos                : list()
+##   .. ..$ status                : chr "adoptable"
+##   .. ..$ status_changed_at     : chr "2022-03-30T13:51:31+0000"
+##   .. ..$ published_at          : chr "2022-03-30T13:51:31+0000"
+##   .. ..$ distance              : num 53.6
+##   .. ..$ contact               :List of 3
+##   .. .. ..$ email  : chr "tamacountyhumanesociety@yahoo.com"
+##   .. .. ..$ phone  : chr "(641) 481-7001"
+##   .. .. ..$ address:List of 6
+##   .. .. .. ..$ address1: chr "1406 E 5th Street"
+##   .. .. .. ..$ address2: NULL
+##   .. .. .. ..$ city    : chr "Tama"
+##   .. .. .. ..$ state   : chr "IA"
+##   .. .. .. ..$ postcode: chr "52339"
+##   .. .. .. ..$ country : chr "US"
+##   .. ..$ _links                :List of 3
+##   .. .. ..$ self        :List of 1
+##   .. .. .. ..$ href: chr "/v2/animals/55152245"
+##   .. .. ..$ type        :List of 1
+##   .. .. .. ..$ href: chr "/v2/types/dog"
+##   .. .. ..$ organization:List of 1
+##   .. .. .. ..$ href: chr "/v2/organizations/ia220"
+##  $ pagination:List of 5
+##   ..$ count_per_page: int 20
+##   ..$ total_count   : int 483
+##   ..$ current_page  : int 1
+##   ..$ total_pages   : int 25
+##   ..$ _links        :List of 1
+##   .. ..$ next:List of 1
+##   .. .. ..$ href: chr "/v2/animals?location=50010&amp;type=dog&amp;page=2"
+```
+
+
+
+---
+class:inverse
+## Your Turn
+
+The [ames-dogs.Rdata](https://bit.ly/3tU4dKG) file is the result from the query on the last slide. 
+
+
+```r
+url_dogs &lt;- "https://bit.ly/3tU4dKG" # download the file to your drive
+load("&lt;your file path&gt;/DataRequest.Rdata")
+```
+
+1. For the dogs returned by the API, assemble a data frame with their name, age, sex, breed(s), and shelter ID.
+
+2. For each dog, can you assemble a list of picture links? (Hint: use list columns)
+
+---
+
+## Your Turn Solutions
+
+
+```r
+library(xml2)
+getBreedInfo &lt;- function(breed) {
+  res &lt;- "unknown"
+  if (breed$unknown == "TRUE") return(res)
+  res &lt;- breed[1]
+  if (breed[2] != "NULL") res &lt;- paste(res, breed[2], sep=", ")
+  if (breed[3] == "TRUE") res &lt;- paste(res, "Mix", sep=", ")
+  return(res)
+}
+
+dog_to_df &lt;- function(x) {
+  tibble(
+    name = x$name,
+    breed = getBreedInfo(x$breeds),
+    age = x$age,
+    sex = x$sex,
+    id = x$id,
+    shelterID = x$shelterId,
+    pics = list(x$photos)
+  )
+}
+
+ames_dog_df &lt;- ames_dogs$animals %&gt;% purrr::map_df(dog_to_df)
+```
+
+---
+
+## Your Turn Solutions
+
+
+```r
+ames_dog_df
+```
+
+```
+## # A tibble: 20 × 5
+##    name                            breed age       id pics  
+##    &lt;chr&gt;                           &lt;chr&gt; &lt;chr&gt;  &lt;int&gt; &lt;list&gt;
+##  1 Summer                          Labr… Young 5.52e7 &lt;list&gt;
+##  2 Tiana                           Dobe… Adult 5.52e7 &lt;list&gt;
+##  3 Artichoke                       Aust… Baby  5.52e7 &lt;list&gt;
+##  4 Turq                            Sibe… Young 5.52e7 &lt;list&gt;
+##  5 Odie                            Pit … Baby  5.52e7 &lt;list&gt;
+##  6 Joe                             Pit … Adult 5.52e7 &lt;list&gt;
+##  7 Chevy                           Pit … Adult 5.52e7 &lt;list&gt;
+##  8 Brock                           Pit … Adult 5.52e7 &lt;list&gt;
+##  9 Carl                            Bloo… Adult 5.52e7 &lt;list&gt;
+## 10 Vito                            Akit… Adult 5.52e7 &lt;list&gt;
+## 11 Luke                            Terr… Young 5.52e7 &lt;list&gt;
+## 12 Blue                            Pit … Young 5.52e7 &lt;list&gt;
+## 13 Bella--Bonded Buddy With Loki   Redb… Adult 5.52e7 &lt;list&gt;
+## 14 Donnie                          Gold… Adult 5.52e7 &lt;list&gt;
+## 15 Wyatt                           Gold… Adult 5.52e7 &lt;list&gt;
+## 16 Fern                            Iris… Adult 5.52e7 &lt;list&gt;
+## 17 Loki--Bonded Buddies With Bella Rott… Adult 5.52e7 &lt;list&gt;
+## 18 Big Boy                         Chow… Young 5.52e7 &lt;list&gt;
+## 19 Titan                           Pit … Adult 5.52e7 &lt;list&gt;
+## 20 Lizzy                           Germ… Young 5.52e7 &lt;list&gt;
+```
+
+---
+
+## Your Turn Solutions
+
+
+```r
+purrr::map_chr(ames_dog_df$pics, .f = function(x) {
+    if (length(x) == 0) return(NA)
+    x[[1]]$full
+  }) %&gt;% 
+  na.omit() %&gt;%
+  knitr::include_graphics()
+```
+
+&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157760/1/?bust=1648670449" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55162877/1/?bust=1648721870" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55159690/1/?bust=1648677828" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157546/1/?bust=1648670250" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55157265/1/?bust=1648680158" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155532/1/?bust=1648661254" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155531/1/?bust=1648661248" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155333/1/?bust=1648673839" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155334/1/?bust=1648660336" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55155331/1/?bust=1648732366" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55153667/1/?bust=1648654051" width="10%" /&gt;&lt;img src="https://dl5zpyw5k3jeb.cloudfront.net/photos/pets/55152245/1/?bust=1648648287" width="10%" /&gt;
+
+---
+
+## APIs and File Types
+
+Not all APIs work with HTML/XML output data. Some return CSV, JSON, and other file types. Read the documentation and try your query out in a web browser in order to figure out how to read the responses correctly.
+
+
+```r
+jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
+```
+
+```
+## $`@context`
+## $`@context`[[1]]
+## [1] "https://geojson.org/geojson-ld/geojson-context.jsonld"
+## 
+## $`@context`[[2]]
+## $`@context`[[2]]$`@version`
+## [1] "1.1"
+## 
+## $`@context`[[2]]$wx
+## [1] "https://api.weather.gov/ontology#"
+## 
+## $`@context`[[2]]$s
+## [1] "https://schema.org/"
+## 
+## $`@context`[[2]]$geo
+## [1] "http://www.opengis.net/ont/geosparql#"
+## 
+## $`@context`[[2]]$unit
+## [1] "http://codes.wmo.int/common/unit/"
+## 
+## $`@context`[[2]]$`@vocab`
+## [1] "https://api.weather.gov/ontology#"
+## 
+## $`@context`[[2]]$geometry
+## $`@context`[[2]]$geometry$`@id`
+## [1] "s:GeoCoordinates"
+## 
+## $`@context`[[2]]$geometry$`@type`
+## [1] "geo:wktLiteral"
+## 
+## 
+## $`@context`[[2]]$city
+## [1] "s:addressLocality"
+## 
+## $`@context`[[2]]$state
+## [1] "s:addressRegion"
+## 
+## $`@context`[[2]]$distance
+## $`@context`[[2]]$distance$`@id`
+## [1] "s:Distance"
+## 
+## $`@context`[[2]]$distance$`@type`
+## [1] "s:QuantitativeValue"
+## 
+## 
+## $`@context`[[2]]$bearing
+## $`@context`[[2]]$bearing$`@type`
+## [1] "s:QuantitativeValue"
+## 
+## 
+## $`@context`[[2]]$value
+## $`@context`[[2]]$value$`@id`
+## [1] "s:value"
+## 
+## 
+## $`@context`[[2]]$unitCode
+## $`@context`[[2]]$unitCode$`@id`
+## [1] "s:unitCode"
+## 
+## $`@context`[[2]]$unitCode$`@type`
+## [1] "@id"
+## 
+## 
+## $`@context`[[2]]$forecastOffice
+## $`@context`[[2]]$forecastOffice$`@type`
+## [1] "@id"
+## 
+## 
+## $`@context`[[2]]$forecastGridData
+## $`@context`[[2]]$forecastGridData$`@type`
+## [1] "@id"
+## 
+## 
+## $`@context`[[2]]$publicZone
+## $`@context`[[2]]$publicZone$`@type`
+## [1] "@id"
+## 
+## 
+## $`@context`[[2]]$county
+## $`@context`[[2]]$county$`@type`
+## [1] "@id"
+## 
+## 
+## 
+## 
+## $id
+## [1] "https://api.weather.gov/points/42.0238,-93.6161"
+## 
+## $type
+## [1] "Feature"
+## 
+## $geometry
+## $geometry$type
+## [1] "Point"
+## 
+## $geometry$coordinates
+## $geometry$coordinates[[1]]
+## [1] -93.6161
+## 
+## $geometry$coordinates[[2]]
+## [1] 42.0238
+## 
+## 
+## 
+## $properties
+## $properties$`@id`
+## [1] "https://api.weather.gov/points/42.0238,-93.6161"
+## 
+## $properties$`@type`
+## [1] "wx:Point"
+## 
+## $properties$cwa
+## [1] "DMX"
+## 
+## $properties$forecastOffice
+## [1] "https://api.weather.gov/offices/DMX"
+## 
+## $properties$gridId
+## [1] "DMX"
+## 
+## $properties$gridX
+## [1] 72
+## 
+## $properties$gridY
+## [1] 68
+## 
+## $properties$forecast
+## [1] "https://api.weather.gov/gridpoints/DMX/72,68/forecast"
+## 
+## $properties$forecastHourly
+## [1] "https://api.weather.gov/gridpoints/DMX/72,68/forecast/hourly"
+## 
+## $properties$forecastGridData
+## [1] "https://api.weather.gov/gridpoints/DMX/72,68"
+## 
+## $properties$observationStations
+## [1] "https://api.weather.gov/gridpoints/DMX/72,68/stations"
+## 
+## $properties$relativeLocation
+## $properties$relativeLocation$type
+## [1] "Feature"
+## 
+## $properties$relativeLocation$geometry
+## $properties$relativeLocation$geometry$type
+## [1] "Point"
+## 
+## $properties$relativeLocation$geometry$coordinates
+## $properties$relativeLocation$geometry$coordinates[[1]]
+## [1] -93.62775
+## 
+## $properties$relativeLocation$geometry$coordinates[[2]]
+## [1] 42.02602
+## 
+## 
+## 
+## $properties$relativeLocation$properties
+## $properties$relativeLocation$properties$city
+## [1] "Ames"
+## 
+## $properties$relativeLocation$properties$state
+## [1] "IA"
+## 
+## $properties$relativeLocation$properties$distance
+## $properties$relativeLocation$properties$distance$unitCode
+## [1] "wmoUnit:m"
+## 
+## $properties$relativeLocation$properties$distance$value
+## [1] 993.2269
+## 
+## 
+## $properties$relativeLocation$properties$bearing
+## $properties$relativeLocation$properties$bearing$unitCode
+## [1] "wmoUnit:degree_(angle)"
+## 
+## $properties$relativeLocation$properties$bearing$value
+## [1] 104
+## 
+## 
+## 
+## 
+## $properties$forecastZone
+## [1] "https://api.weather.gov/zones/forecast/IAZ048"
+## 
+## $properties$county
+## [1] "https://api.weather.gov/zones/county/IAC169"
+## 
+## $properties$fireWeatherZone
+## [1] "https://api.weather.gov/zones/fire/IAZ048"
+## 
+## $properties$timeZone
+## [1] "America/Chicago"
+## 
+## $properties$radarStation
+## [1] "KDMX"
+```
+
+---
+class:inverse
+## Your Turn
+
+The NOAA Weather API has many layers. If you use the /points/ API and pass in latitude and longitude, 
+
+`https://api.weather.gov/points/42.0238,-93.6161`
+
+the returned JSON file provides links to other APIs. 
+
+Use the `jsonlite` package to work with the returned JSON file (`jsonlite::fromJSON`).
+
+Write a function that accepts latitude and longitude and returns the hourly forecast as a data frame. 
+
+Can you plot the temperature forecast? 
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
