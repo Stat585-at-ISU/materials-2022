@@ -1737,13 +1737,13 @@ purrr::map_chr(ames_dog_df$pics, .f = function(x) {
 
 ---
 
-## APIs and File Types
+## Whether the weather or weather the weather?
 
-Not all APIs work with HTML/XML output data. Some return CSV, JSON, and other file types. Read the documentation and try your query out in a web browser in order to figure out how to read the responses correctly.
+Read through the [NOAA API](https://www.ncdc.noaa.gov/cdo-web/webservices/v2) documentation and try out queries in the web browser to check how to read responses correctly.
 
 
 ```r
-jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
+jsonlite::read_json("https://api.weather.gov/points/41.9906,-93.6189")
 ```
 
 ```
@@ -1833,7 +1833,7 @@ jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
 ## 
 ## 
 ## $id
-## [1] "https://api.weather.gov/points/42.0238,-93.6161"
+## [1] "https://api.weather.gov/points/41.9906,-93.6189"
 ## 
 ## $type
 ## [1] "Feature"
@@ -1844,16 +1844,16 @@ jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
 ## 
 ## $geometry$coordinates
 ## $geometry$coordinates[[1]]
-## [1] -93.6161
+## [1] -93.6189
 ## 
 ## $geometry$coordinates[[2]]
-## [1] 42.0238
+## [1] 41.9906
 ## 
 ## 
 ## 
 ## $properties
 ## $properties$`@id`
-## [1] "https://api.weather.gov/points/42.0238,-93.6161"
+## [1] "https://api.weather.gov/points/41.9906,-93.6189"
 ## 
 ## $properties$`@type`
 ## [1] "wx:Point"
@@ -1871,19 +1871,19 @@ jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
 ## [1] 72
 ## 
 ## $properties$gridY
-## [1] 68
+## [1] 67
 ## 
 ## $properties$forecast
-## [1] "https://api.weather.gov/gridpoints/DMX/72,68/forecast"
+## [1] "https://api.weather.gov/gridpoints/DMX/72,67/forecast"
 ## 
 ## $properties$forecastHourly
-## [1] "https://api.weather.gov/gridpoints/DMX/72,68/forecast/hourly"
+## [1] "https://api.weather.gov/gridpoints/DMX/72,67/forecast/hourly"
 ## 
 ## $properties$forecastGridData
-## [1] "https://api.weather.gov/gridpoints/DMX/72,68"
+## [1] "https://api.weather.gov/gridpoints/DMX/72,67"
 ## 
 ## $properties$observationStations
-## [1] "https://api.weather.gov/gridpoints/DMX/72,68/stations"
+## [1] "https://api.weather.gov/gridpoints/DMX/72,67/stations"
 ## 
 ## $properties$relativeLocation
 ## $properties$relativeLocation$type
@@ -1914,7 +1914,7 @@ jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
 ## [1] "wmoUnit:m"
 ## 
 ## $properties$relativeLocation$properties$distance$value
-## [1] 993.2269
+## [1] 4005.787
 ## 
 ## 
 ## $properties$relativeLocation$properties$bearing
@@ -1922,7 +1922,7 @@ jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
 ## [1] "wmoUnit:degree_(angle)"
 ## 
 ## $properties$relativeLocation$properties$bearing$value
-## [1] 104
+## [1] 169
 ## 
 ## 
 ## 
@@ -1958,6 +1958,59 @@ Use the `jsonlite` package to work with the returned JSON file (`jsonlite::fromJ
 Write a function that accepts latitude and longitude and returns the hourly forecast as a data frame. 
 
 Can you plot the temperature forecast? 
+
+---
+
+## Your Turn - Solution
+
+
+```r
+get_weather &lt;- function(lat, lon) {
+  checkmate::assert_number(lat)
+  checkmate::assert_number(lon)
+  url &lt;- sprintf("https://api.weather.gov/points/%f,%f", lat, lon)
+  initialjson &lt;- jsonlite::fromJSON(url)
+  
+  if (!checkmate::check_subset("properties", names(initialjson)) | 
+      !checkmate::check_subset("forecastHourly", names(initialjson$properties))) {
+    stop("No Information Found. Check Latitude/Longitude values.")
+  }
+  
+  hourlyforecast &lt;- jsonlite::fromJSON(initialjson$properties$forecastHourly)
+  
+  res &lt;- hourlyforecast$properties$periods
+  checkmate::check_data_frame(res)
+  res
+}
+```
+---
+
+## Your Turn - Solution
+
+
+```r
+amesweather &lt;- get_weather(42, -93.6) %&gt;%
+  mutate(startTime = lubridate::ymd_hms(startTime, tz = "America/Chicago")) 
+```
+
+```
+## Date in ISO8601 format; converting timezone from UTC to "America/Chicago".
+```
+
+```r
+# Add icons for every 6 hour interval
+maxtemp &lt;- max(amesweather$temperature)
+icons &lt;- amesweather %&gt;% filter(row_number() %% 6 == 1) 
+icon_lst &lt;- purrr::map2(
+  icons$icon, icons$startTime, 
+  ~cowplot::draw_image(.x, x = .y, y = maxtemp - 3, width = lubridate::hours(6), height = 6))
+
+ggplot() + 
+  icon_lst + 
+  geom_line(aes(x = startTime, y = temperature), data = amesweather) 
+```
+
+![](03_api_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

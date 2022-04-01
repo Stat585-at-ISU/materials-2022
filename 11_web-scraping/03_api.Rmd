@@ -283,12 +283,12 @@ purrr::map_chr(ames_dog_df$pics, .f = function(x) {
 
 ---
 
-## APIs and File Types
+## Whether the weather or weather the weather?
 
-Not all APIs work with HTML/XML output data. Some return CSV, JSON, and other file types. Read the documentation and try your query out in a web browser in order to figure out how to read the responses correctly.
+Read through the [NOAA API](https://www.ncdc.noaa.gov/cdo-web/webservices/v2) documentation and try out queries in the web browser to check how to read responses correctly.
 
 ```{r}
-jsonlite::read_json("https://api.weather.gov/points/42.0238,-93.6161")
+jsonlite::read_json("https://api.weather.gov/points/41.9906,-93.6189")
 ```
 
 ---
@@ -306,4 +306,48 @@ Use the `jsonlite` package to work with the returned JSON file (`jsonlite::fromJ
 Write a function that accepts latitude and longitude and returns the hourly forecast as a data frame. 
 
 Can you plot the temperature forecast? 
+
+---
+
+## Your Turn - Solution
+
+```{r}
+get_weather <- function(lat, lon) {
+  checkmate::assert_number(lat)
+  checkmate::assert_number(lon)
+  url <- sprintf("https://api.weather.gov/points/%f,%f", lat, lon)
+  initialjson <- jsonlite::fromJSON(url)
+  
+  if (!checkmate::check_subset("properties", names(initialjson)) | 
+      !checkmate::check_subset("forecastHourly", names(initialjson$properties))) {
+    stop("No Information Found. Check Latitude/Longitude values.")
+  }
+  
+  hourlyforecast <- jsonlite::fromJSON(initialjson$properties$forecastHourly)
+  
+  res <- hourlyforecast$properties$periods
+  checkmate::check_data_frame(res)
+  res
+}
+```
+---
+
+## Your Turn - Solution
+
+```{r}
+amesweather <- get_weather(42, -93.6) %>%
+  mutate(startTime = lubridate::ymd_hms(startTime, tz = "America/Chicago")) 
+
+# Add icons for every 6 hour interval
+maxtemp <- max(amesweather$temperature)
+icons <- amesweather %>% filter(row_number() %% 6 == 1) 
+icon_lst <- purrr::map2(
+  icons$icon, icons$startTime, 
+  ~cowplot::draw_image(.x, x = .y, y = maxtemp - 3, width = lubridate::hours(6), height = 6))
+
+ggplot() + 
+  icon_lst + 
+  geom_line(aes(x = startTime, y = temperature), data = amesweather) 
+
+```
 
