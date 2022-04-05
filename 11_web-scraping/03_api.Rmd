@@ -337,7 +337,9 @@ get_weather <- function(lat, lon) {
 ```{r}
 amesweather <- get_weather(42, -93.6) %>%
   mutate(startTime = lubridate::ymd_hms(startTime, tz = "America/Chicago")) 
+```
 
+```{r echo=FALSE, fig.height = 3.5}
 # Add icons for every 6 hour interval
 maxtemp <- max(amesweather$temperature)
 icons <- amesweather %>% filter(row_number() %% 6 == 1) 

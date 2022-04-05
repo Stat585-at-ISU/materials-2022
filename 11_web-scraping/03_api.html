@@ -1997,20 +1997,7 @@ amesweather &lt;- get_weather(42, -93.6) %&gt;%
 ## Date in ISO8601 format; converting timezone from UTC to "America/Chicago".
 ```
 
-```r
-# Add icons for every 6 hour interval
-maxtemp &lt;- max(amesweather$temperature)
-icons &lt;- amesweather %&gt;% filter(row_number() %% 6 == 1) 
-icon_lst &lt;- purrr::map2(
-  icons$icon, icons$startTime, 
-  ~cowplot::draw_image(.x, x = .y, y = maxtemp - 3, width = lubridate::hours(6), height = 6))
-
-ggplot() + 
-  icon_lst + 
-  geom_line(aes(x = startTime, y = temperature), data = amesweather) 
-```
-
-![](03_api_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
+![](03_api_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
