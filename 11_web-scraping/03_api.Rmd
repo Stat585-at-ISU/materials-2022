@@ -238,14 +238,19 @@ load("<your file path>/DataRequest.Rdata")
 library(xml2)
 getBreedInfo <- function(breed) {
   res <- "unknown"
-  if (breed$unknown == "TRUE") return(res)
-  res <- breed[1]
-  if (breed[2] != "NULL") res <- paste(res, breed[2], sep=", ")
-  if (breed[3] == "TRUE") res <- paste(res, "Mix", sep=", ")
+  if (breed$unknown) return(res)
+  res <- breed$primary
+  if (!is.null(breed$secondary)) 
+    res <- paste(res, breed$secondary, sep=", ")
+  if (breed$mixed) res <- paste(res, "Mix", sep=", ")
   return(res)
 }
 
-dog_to_df <- function(x) {
+dog_to_df <- function(x, verbose=FALSE) {
+  if (verbose) {
+    cat(x$name)
+    cat("\n")
+  }
   tibble(
     name = x$name,
     breed = getBreedInfo(x$breeds),
