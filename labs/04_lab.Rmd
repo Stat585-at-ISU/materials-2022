@@ -1,0 +1,72 @@
+---
+title: 'Lab Assignment #4: a shiny view of liquor purchases in Iowa'
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse
+## Deliverables
+
+There are two parts to this assignment:
+
+1. **Reading and cleaning the data** 
+    
+    - read data from API 
+    - clean data
+    
+    - document reading and cleaning in the README Rmarkdown
+
+2. **Visualizing the data in a shiny app** 
+
+    - write a shiny app with (a) a spatial and (b) a temporal tab
+    
+        
+
+---
+class: inverse
+# Lab organization 
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE, echo = TRUE)
+```
+
+1. Similar to last time, you are asked to submit a functional package as your deliverable for the lab.
+
+2. Accepting the invite gives you access to a Github repository that was created using `usethis` functionality `create_package` and `use_readme_rmd`. 
+
+3. This repository is supposed to provide the basis for your R package.
+
+---
+
+# The data
+
+As part of the Iowa's data portal data on all liquor sales in Iowa is published, resulting in more than 23 million sales since 2012: https://data.iowa.gov/Economy/Iowa-Liquor-Sales/m3tr-qhgy
+
+
+1. **Reading the data:** use the API provided by the data portal to get a manageable subset of the data. 
+
+    Note: the API will only provide the first 1000 sales. You DO NOT have to go through the process of getting an API token. Just show your work on the first 1000 observations.
+
+2. **Cleaning the data:** In the inst folder, place an R script called `data-cleaning.R` that documents the full process from downloading the raw data through an httr::GET query to a cleaned version of the data that is included in your package. You don't have to clean all variables, but at least one temporal variable, one spatial variable and at least one 'outcome' variable, such as sales volume or price. Make sure the `data-cleaning.R` code is working not just on your own machine.
+
+**Include a 'walkthrough' in your README file, that calls all code necessary to read and clean the data. **
+
+---
+
+# The app
+
+Write a shiny app to help users explore the data.
+
+The app should have at least two tabs: one tab that summarizes a temporal aspect and one tab that summarizes a spatial aspect in the data
+
+Each tab should show a visualization (you could look into `plotly` for an interactive visualization) and have at least two widgets to change an aspect of  what you show.
+
+**Include a description of the functionality in your shiny app. **
+<br>
+
+**Upload your package with the shiny app to your github repository by Monday April 18, midnight.**
