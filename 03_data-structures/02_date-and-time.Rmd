@@ -1,5 +1,5 @@
 ---
-title: "Stat 585 - Date and Time"
+title: "Stat 585 - Working with Date and Time"
 author: "Heike Hofmann"
 output:
   xaringan::moon_reader:
@@ -10,16 +10,11 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
-class: center, middle
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 ```
-
-# Working with date and time
-
----
 
 ## `lubridate` package
 
@@ -28,6 +23,13 @@ library(lubridate)
 - defines different classes of time: instants, periods, intervals, durations
 
 - defines converter and accessor functions, enables time calculus
+
+
+Resources:
+
+Cheatsheet for [lubridate](https://rawgit.com/rstudio/cheatsheets/main/lubridate.pdf) package
+
+Chapter [Dates and Times](https://r4ds.had.co.nz/dates-and-times.html) in R for Data Science
 
 ---
 
@@ -46,7 +48,7 @@ library(lubridate)
 
 Example:
 ```{r message=FALSE}
-mdy("03-01-2017")
+mdy("04-18-2022")
 ```
 
 ---
@@ -81,56 +83,53 @@ span
 end_date - days(10)
 ```
 
+---
+class: inverse
+## Your Turn
+
+How many days is it until your birthday? What day of the week will it be this year?
+
+On which day of the week were you born?
+
+How often is the 13th of a month a Friday? Based on the last ten years, are there some days that are more likely to be on a Friday than others?
+
 
 ---
 
-## Example: Movies
+## Your Turn Solutions
 
 ```{r}
-movies <- read.csv("../data/movies.csv")
-summary(movies$Date) # factor variable: number of movies in theaters
+birthday <- ymd("2022-05-01") # (this is my daughter's birthday)
+birthday - today()
+
+wday(birthday, label = TRUE)
+
+wday(ymd("2014-05-01"), label = TRUE)
 ```
 
 ---
-
-
-## Example: Movies (cont'd)
-
-```{r, fig.height = 3.25}
-library(lubridate)
-movies$Date <- ymd(movies$Date)
-summary(movies$Date) # makes more sense
-
-movies %>% ggplot(aes(x = Date)) + geom_histogram(binwidth=7)
-```
-
----
-class:inverse
-## Your Turn (10 min)
-
-- load the `movies` data set,
-- convert the variable `release` to a date format,
-- plot a histogram of the variable.
-- Check whether the time between the release of a movie and the date is equal to the number of days in theaters. 
-- How should we interpret the result of `as.numeric(months(1))`?
-
----
-
-## Your Turn - solution
-
-```{r fig.height=4.5}
-movies$Release <- ymd(movies$Release)
-movies$Days2 <- movies$Date - movies$Release
-movies %>% ggplot(aes(x = Release)) + 
-  geom_histogram(binwidth = 90)
-```
-
----
-
-## Your Turn - solution (cont'd)
 
 ```{r}
-str(movies$Release)
+dates <- seq.Date(from=ymd("2010-01-01"), to=ymd("2021-12-31"), by = 1)
 
-as.numeric(months(1))/(60*60*24) # that's the average number of days in a month
+thirteens <- dates[mday(dates) == 13]
+table(wday(thirteens, label=TRUE))
+```
+
+---
+
+
+```{r, fig.height = 4.5}
+dframe <- data.frame(dates = dates, 
+                     weekdays = wday(dates, label=TRUE), 
+                     month_days = mday(dates))
+dframe %>% 
+  ggplot(aes(x = month_days, fill = weekdays)) + 
+  geom_bar()
+```
+
+---
+
+```{r}
+xtabs(~weekdays+month_days, data = dframe)
 ```
