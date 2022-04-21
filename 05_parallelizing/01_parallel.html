@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Stat 585 - parallelizing code</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Heike Hofmann" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="tweaks.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Stat 585 - parallelizing code
+### Heike Hofmann
+
+---
+
+
+
+
+# Outline
+
+- embarassingly simple parallel processes
+
+- solutions in R:
+
+  - future
+  - furrr
+  
+---
+
+## Idea of Parallelization
+
+- by default R is using only a single processor (core)
+
+- most modern machines have multiple processors
+
+- parallel code makes use of these multiple processors
+
+- challenge: identify those pieces of code that can be run in parallel
+
+---
+
+## Embarassingly parallel processes
+
+An *embarassingly parallel process* is defined as a process where 
+little or no effort is needed to separate the problem into a number of parallel tasks
+
+Loops and grouping structures are prime candidates:
+
+
+```r
+dataframe %&gt;% group_by(group) %&gt;%
+  mutate(&lt;&lt;some calculation&gt;&gt;)
+```
+
+we can exploit group structure to identify code pieces that can be parallelized
+
+
+---
+
+## Parallel R
+
+- there are various packages for High Performance Computing in R, &lt;br&gt;
+e.g. CRAN view task at https://cran.r-project.org/web/views/HighPerformanceComputing.html
+
+- some of these packages are experimental and only available as github packages
+
+
+---
+
+## `multidplyr` (experimental, on version 0.1.0 since before 2017)
+
+- experimental package in the `tidyverse` collection
+
+- `multidplyr` is parallel version of `dplyr` 
+
+- available from CRAN
+
+&lt;br&gt;
+
+Resource: 
+- https://www.r-bloggers.com/speed-up-your-code-parallel-processing-with-multidplyr/
+- An [introduction](https://multidplyr.tidyverse.org/articles/multidplyr.html) to multidplyr
+
+
+---
+
+## `future` package
+
+- on CRAN, author: Henrik Bengtsson
+
+- both for sequential and parallel evaluation
+
+- special assignment operator `%&lt;-%` determines type of evaluation
+
+
+```r
+library(future)
+
+x %&lt;-% {
+     a &lt;- 2
+     2 * a}
+```
+
+code chunk `x` will be evaluated when called (in the future); if a parallel is defined that will be used to evaluate the code chunk
+
+---
+
+## An example
+
+Fits one random forest predicting color, for each value of clarity (8 levels)
+
+
+```r
+library(tidyverse)
+library(randomForest)
+
+ptm0 &lt;- proc.time()
+x %&lt;-% {
+  color_models &lt;- diamonds %&gt;%
+  group_by(clarity) %&gt;%
+  do(
+    mymodel = randomForest(color ~ carat+cut+depth+table+price+x+y+z, 
+                           data = ., ntree = 1000)
+  )
+}
+ptm1 &lt;- proc.time()
+```
+
+On my machine, without a parallel plan defined: 
+
+```r
+ptm1 - ptm0
+```
+
+```
+##    user  system elapsed 
+##  60.940   1.918  63.201
+```
+
+---
+
+## Defining a parallel plan
+
+two main types:
+
+- `multisession`:  future is evaluated in a background R session running on the same machine as the calling R process (works on all machines)
+
+- `multicore`:  future is evaluated by forking the main R session (faster, but does not work on Windows)
+
+- `cluster`:  external R session on local or remote machine
+
+---
+
+## Defining a parallel plan 
+
+
+```r
+plan(multicore) # use multicore, unless that's not possible
+```
+
+```
+## Warning in supportsMulticoreAndRStudio(...): [ONE-TIME WARNING] Forked
+## processing ('multicore') is not supported when running R from RStudio
+## because it is considered unstable. For more details, how to control forked
+## processing or not, and how to silence this warning in future R sessions, see ?
+## parallelly::supportsMulticore
+```
+
+```r
+# how many cores?
+availableCores()
+```
+
+```
+## system 
+##     16
+```
+
+
+```r
+# evaluate the random forest again
+ptm2 &lt;- proc.time()
+x 
+ptm3 &lt;- proc.time()
+```
+
+---
+
+## Results from 16 cores
+
+Quite disappointing - multiple reasons, mostly because we are running parallelized code in RStudio (considered to be unstable)
+
+
+```r
+ptm3-ptm2
+```
+```
+   user  system elapsed 
+  146.1    45.0   191.1
+```  
+
+
+---
+
+## Switch plan
+
+
+```r
+plan(multicore) # use multicore, unless that's not possible
+ptm4 &lt;- proc.time()
+x 
+ptm5 &lt;- proc.time()
+ptm5-ptm4
+```
+
+
+
+---
+
+## Results from a 20 core server
+
+We see a significant increase in speed 
+
+![](01_parallel_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+
+## Results from a 20 core server (cont'd)
+
+We don't actually see an X-fold increase in speed when we use X nodes
+
+![](01_parallel_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+---
+class: inverse
+## Your Turn (10 mins)
+
+- Check how many cores the machine you are using has `parallel::detectCores()`
+
+- Initialize a cluster with fewer than the number of cores available
+
+- Run the R code below on your machine 
+
+- Parallelize the statement, re-run it and time 
+
+
+```r
+library(nycflights13)
+delays &lt;- flights %&gt;% group_by(flight) %&gt;% 
+  summarize(
+    mean_delay = mean(arr_delay, na.rm=FALSE)
+    ) 
+```
+
+---
+
+# The `furrr` package
+
+`future` + `purrr` = `furrr`
+
+"Apply Mapping Functions in Parallel using Futures"
+
+Functions implemented: `future_map`, `future_map2`, `future_pmap`, ...
+
+
+---
+
+# Rewriting our first example to fit with purrr
+
+
+
+```r
+ptm0_purrr &lt;- proc.time()
+color_purrr &lt;- 
+    diamonds %&gt;% nest(data = -clarity) %&gt;% 
+    mutate (
+      mymodel = data %&gt;% purrr::map(.f = function(d) 
+        randomForest(color ~ carat+cut+depth+table+price+x+y+z, 
+                           data = d, ntree = 1000)
+        )
+    )
+ptm1_purrr &lt;- proc.time()
+```
+
+About the same performance as before:
+
+```r
+ptm1_purrr - ptm0_purrr
+```
+
+```
+##    user  system elapsed 
+##  62.450   2.069  65.779
+```
+
+---
+
+## Now with all cores
+
+
+```r
+library(furrr)
+plan(multicore)
+ptm2_purrr &lt;- proc.time()
+color_purrr &lt;- 
+    diamonds %&gt;% nest(data = -clarity) %&gt;% 
+    mutate (
+      mymodel = data %&gt;% furrr::future_map(.f = function(d) 
+        randomForest(color ~ carat+cut+depth+table+price+x+y+z, 
+                           data = d, ntree = 1000),
+        .options = furrr_options(seed=NULL)
+        )
+    )
+```
+
+```
+## Warning: UNRELIABLE VALUE: Future ('&lt;none&gt;') unexpectedly generated random
+## numbers without specifying argument 'seed'. There is a risk that those random
+## numbers are not statistically sound and the overall results might be invalid.
+## To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe random
+## numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use
+## 'seed=NULL', or set option 'future.rng.onMisuse' to "ignore".
+```
+
+```r
+ptm3_purrr &lt;- proc.time()
+```
+
+Much better than with just `future`, but not nearly sixteen times the speed
+
+```r
+ptm3_purrr - ptm2_purrr
+```
+
+```
+##    user  system elapsed 
+##  61.686   1.522  63.453
+```
+
+---
+class: inverse
+## Your Turn
+
+Check the previous example again, rewrite your solution to use `purrr` functionality
+
+Now apply `furrr` functionality and time the difference
+
+
+```r
+library(nycflights13)
+delays &lt;- flights %&gt;% group_by(flight) %&gt;% 
+  summarize(
+    mean_delay = mean(arr_delay, na.rm=FALSE)
+    ) 
+```
+
+---
+
+# Potential Pitfalls of Parallel Programming
+
+- Shared data: if the data is big, a lot of time will be spent copying data to each of the nodes
+
+- Random seeds: set your random seed when using any random numbers/processes
+In parallel processes we also need to make sure that sequences do not overlap
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

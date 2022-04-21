@@ -1,0 +1,323 @@
+---
+title: "Stat 585 - parallelizing code"
+author: "Heike Hofmann"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, default-fonts, "tweaks.css"]
+    nature:
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk(cache=TRUE)
+```
+
+# Outline
+
+- embarassingly simple parallel processes
+
+- solutions in R:
+
+  - future
+  - furrr
+  
+---
+
+## Idea of Parallelization
+
+- by default R is using only a single processor (core)
+
+- most modern machines have multiple processors
+
+- parallel code makes use of these multiple processors
+
+- challenge: identify those pieces of code that can be run in parallel
+
+---
+
+## Embarassingly parallel processes
+
+An *embarassingly parallel process* is defined as a process where 
+little or no effort is needed to separate the problem into a number of parallel tasks
+
+Loops and grouping structures are prime candidates:
+
+```{r eval = FALSE}
+dataframe %>% group_by(group) %>%
+  mutate(<<some calculation>>)
+```
+
+we can exploit group structure to identify code pieces that can be parallelized
+
+
+---
+
+## Parallel R
+
+- there are various packages for High Performance Computing in R, <br>
+e.g. CRAN view task at https://cran.r-project.org/web/views/HighPerformanceComputing.html
+
+- some of these packages are experimental and only available as github packages
+
+
+---
+
+## `multidplyr` (experimental, on version 0.1.0 since before 2017)
+
+- experimental package in the `tidyverse` collection
+
+- `multidplyr` is parallel version of `dplyr` 
+
+- available from CRAN
+
+<br>
+
+Resource: 
+- https://www.r-bloggers.com/speed-up-your-code-parallel-processing-with-multidplyr/
+- An [introduction](https://multidplyr.tidyverse.org/articles/multidplyr.html) to multidplyr
+
+
+---
+
+## `future` package
+
+- on CRAN, author: Henrik Bengtsson
+
+- both for sequential and parallel evaluation
+
+- special assignment operator `%<-%` determines type of evaluation
+
+```{r}
+library(future)
+
+x %<-% {
+     a <- 2
+     2 * a}
+```
+
+code chunk `x` will be evaluated when called (in the future); if a parallel is defined that will be used to evaluate the code chunk
+
+---
+
+## An example
+
+Fits one random forest predicting color, for each value of clarity (8 levels)
+
+```{r warning=FALSE, message=FALSE}
+library(tidyverse)
+library(randomForest)
+
+ptm0 <- proc.time()
+x %<-% {
+  color_models <- diamonds %>%
+  group_by(clarity) %>%
+  do(
+    mymodel = randomForest(color ~ carat+cut+depth+table+price+x+y+z, 
+                           data = ., ntree = 1000)
+  )
+}
+ptm1 <- proc.time()
+```
+
+On my machine, without a parallel plan defined: 
+```{r}
+ptm1 - ptm0
+```
+
+---
+
+## Defining a parallel plan
+
+two main types:
+
+- `multisession`:  future is evaluated in a background R session running on the same machine as the calling R process (works on all machines)
+
+- `multicore`:  future is evaluated by forking the main R session (faster, but does not work on Windows)
+
+- `cluster`:  external R session on local or remote machine
+
+---
+
+## Defining a parallel plan 
+
+```{r}
+plan(multicore) # use multicore, unless that's not possible
+
+# how many cores?
+availableCores()
+```
+
+```{r eval = FALSE}
+# evaluate the random forest again
+ptm2 <- proc.time()
+x 
+ptm3 <- proc.time()
+```
+
+---
+
+## Results from 16 cores
+
+Quite disappointing - multiple reasons, mostly because we are running parallelized code in RStudio (considered to be unstable)
+
+```{r, eval = FALSE}
+ptm3-ptm2
+```
+```
+   user  system elapsed 
+  146.1    45.0   191.1
+```  
+
+
+---
+
+## Switch plan
+
+```{r, eval = FALSE}
+plan(multicore) # use multicore, unless that's not possible
+ptm4 <- proc.time()
+x 
+ptm5 <- proc.time()
+ptm5-ptm4
+```
+
+
+
+---
+
+## Results from a 20 core server
+
+We see a significant increase in speed 
+
+```{r echo =FALSE, message=FALSE, warning = FALSE, fig.height = 4.5}
+library(tidyverse)
+dframe <- read.csv(here::here("data/rf-parallel.csv"))
+dframe %>% 
+  ggplot(aes(x = cores, y = time)) + geom_point() +
+  geom_hline(yintercept = 59.552, colour = "blue") +
+  xlab("Number of cores used") +
+  ylab("Time in seconds")
+```
+
+---
+
+## Results from a 20 core server (cont'd)
+
+We don't actually see an X-fold increase in speed when we use X nodes
+
+```{r echo=FALSE, message=FALSE, warning = FALSE, fig.height = 4.5}
+dframe %>% 
+  ggplot(aes(x = cores, y = (59.552/time)/cores)) + geom_point() +
+  xlab("Number of cores used") +
+  ylab("Efficiency (higher is better)")
+```
+
+---
+class: inverse
+## Your Turn (10 mins)
+
+- Check how many cores the machine you are using has `parallel::detectCores()`
+
+- Initialize a cluster with fewer than the number of cores available
+
+- Run the R code below on your machine 
+
+- Parallelize the statement, re-run it and time 
+
+```{r}
+library(nycflights13)
+delays <- flights %>% group_by(flight) %>% 
+  summarize(
+    mean_delay = mean(arr_delay, na.rm=FALSE)
+    ) 
+```
+
+---
+
+# The `furrr` package
+
+`future` + `purrr` = `furrr`
+
+"Apply Mapping Functions in Parallel using Futures"
+
+Functions implemented: `future_map`, `future_map2`, `future_pmap`, ...
+
+
+---
+
+# Rewriting our first example to fit with purrr
+
+
+```{r}
+ptm0_purrr <- proc.time()
+color_purrr <- 
+    diamonds %>% nest(data = -clarity) %>% 
+    mutate (
+      mymodel = data %>% purrr::map(.f = function(d) 
+        randomForest(color ~ carat+cut+depth+table+price+x+y+z, 
+                           data = d, ntree = 1000)
+        )
+    )
+ptm1_purrr <- proc.time()
+```
+
+About the same performance as before:
+```{r}
+ptm1_purrr - ptm0_purrr
+```
+
+---
+
+## Now with all cores
+
+```{r}
+library(furrr)
+plan(multicore)
+ptm2_purrr <- proc.time()
+color_purrr <- 
+    diamonds %>% nest(data = -clarity) %>% 
+    mutate (
+      mymodel = data %>% furrr::future_map(.f = function(d) 
+        randomForest(color ~ carat+cut+depth+table+price+x+y+z, 
+                           data = d, ntree = 1000),
+        .options = furrr_options(seed=TRUE)
+        )
+    )
+ptm3_purrr <- proc.time()
+```
+
+Much better than with just `future`, but not nearly sixteen times the speed
+```{r}
+ptm3_purrr - ptm2_purrr
+```
+
+---
+class: inverse
+## Your Turn
+
+Check the previous example again, rewrite your solution to use `purrr` functionality
+
+Now apply `furrr` functionality and time the difference
+
+```{r}
+library(nycflights13)
+delays <- flights %>% group_by(flight) %>% 
+  summarize(
+    mean_delay = mean(arr_delay, na.rm=FALSE)
+    ) 
+```
+
+---
+
+# Potential Pitfalls of Parallel Programming
+
+- Shared data: if the data is big, a lot of time will be spent copying data to each of the nodes
+
+- Random seeds: set your random seed when using any random numbers/processes
+In parallel processes we also need to make sure that sequences do not overlap
+
