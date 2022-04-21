@@ -22,7 +22,6 @@ fizzbuzz <- function(a, b) {
   result
 }
 
-fizzbuzz(1,10)
 
 ###########
 # Option 2
@@ -36,7 +35,6 @@ fizzbuzz_no_iter <- function(a, b) {
   return( c(fizzbuzz1(lower), fizzbuzz_no_iter(lower+1, upper)))
 }
 
-fizzbuzz_no_iter(1, 10)
 
 ##########
 # Option 3
@@ -53,5 +51,5 @@ fizzbuzz_vector <- function(a, b) {
   res
 }
 
-fizzbuzz_vector(1,10)
+
 
