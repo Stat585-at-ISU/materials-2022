@@ -183,7 +183,7 @@ The semi-colon can be used to separate each SQL statement in a system that allow
 ]
 
 &lt;br&gt;
-`Select ID, count(ID) from Attendance where Status='absent'` leads to 
+`Select ID, count(ID) from Attendance where Status='absent' group by ID` leads to 
 
 | *ID*            | Frequency          | 
 | ------------- |-------------:| 
@@ -431,7 +431,7 @@ src_sqlite
 ##     RSQLite::initExtension(con)
 ##     dbplyr::src_dbi(con, auto_disconnect = TRUE)
 ## }
-## &lt;bytecode: 0x7fdeeaaff068&gt;
+## &lt;bytecode: 0x7fbf5ea89a78&gt;
 ## &lt;environment: namespace:dplyr&gt;
 ```
 
@@ -451,6 +451,15 @@ fars2
 ```
 ## src:  sqlite 3.38.2 [/Users/hofmann/Documents/Teaching/Stat 585/Spring 2022/materials-2022/data/fars2014]
 ## tbls: accidents, person, vehicle
+```
+
+
+```r
+DBI::dbListTables(con)
+```
+
+```
+## [1] "accidents" "person"    "vehicle"
 ```
 
 ---
@@ -524,7 +533,7 @@ gg &lt;- driver_acc %&gt;% group_by(DAY_WEEK, HOUR, SEX) %&gt;%
 gg
 ```
 
-![](01_sqlite_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+![](01_sqlite_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
 
 ---
 class: inverse

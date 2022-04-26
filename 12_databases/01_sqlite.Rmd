@@ -180,7 +180,7 @@ The semi-colon can be used to separate each SQL statement in a system that allow
 ]
 
 <br>
-`Select ID, count(ID) from Attendance where Status='absent'` leads to 
+`Select ID, count(ID) from Attendance where Status='absent' group by ID` leads to 
 
 | *ID*            | Frequency          | 
 | ------------- |-------------:| 
@@ -374,6 +374,10 @@ Gut the deprecated function
 con <- DBI::dbConnect(RSQLite::SQLite(), "../data/fars2014")
 fars2 <-  dbplyr::src_dbi(con, auto_disconnect = TRUE)
 fars2
+```
+
+```{r}
+DBI::dbListTables(con)
 ```
 
 ---
