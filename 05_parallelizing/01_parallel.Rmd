@@ -14,7 +14,6 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk(cache=TRUE)
 ```
 
 # Outline
@@ -178,7 +177,7 @@ ptm3-ptm2
 
 ## Switch plan
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 plan(multicore) # use multicore, unless that's not possible
 ptm4 <- proc.time()
 x 
@@ -290,6 +289,10 @@ color_purrr <-
     )
 ptm3_purrr <- proc.time()
 ```
+
+---
+
+# Performance of furrr
 
 Much better than with just `future`, but not nearly sixteen times the speed
 ```{r}

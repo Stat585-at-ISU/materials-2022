@@ -139,7 +139,7 @@ ptm1 - ptm0
 
 ```
 ##    user  system elapsed 
-##  60.940   1.918  63.201
+##  60.510   1.726  62.355
 ```
 
 ---
@@ -214,8 +214,40 @@ ptm3-ptm2
 plan(multicore) # use multicore, unless that's not possible
 ptm4 &lt;- proc.time()
 x 
+```
+
+```
+## Warning: UNRELIABLE VALUE: Future ('&lt;none&gt;') unexpectedly generated random
+## numbers without specifying argument 'seed'. There is a risk that those random
+## numbers are not statistically sound and the overall results might be invalid.
+## To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe random
+## numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use
+## 'seed=NULL', or set option 'future.rng.onMisuse' to "ignore".
+```
+
+```
+## # A tibble: 8 × 2
+## # Rowwise: 
+##   clarity mymodel   
+##   &lt;ord&gt;   &lt;list&gt;    
+## 1 I1      &lt;rndmFrs.&gt;
+## 2 SI2     &lt;rndmFrs.&gt;
+## 3 SI1     &lt;rndmFrs.&gt;
+## 4 VS2     &lt;rndmFrs.&gt;
+## 5 VS1     &lt;rndmFrs.&gt;
+## 6 VVS2    &lt;rndmFrs.&gt;
+## 7 VVS1    &lt;rndmFrs.&gt;
+## 8 IF      &lt;rndmFrs.&gt;
+```
+
+```r
 ptm5 &lt;- proc.time()
 ptm5-ptm4
+```
+
+```
+##    user  system elapsed 
+##   0.018   0.001   0.021
 ```
 
 
@@ -295,7 +327,7 @@ ptm1_purrr - ptm0_purrr
 
 ```
 ##    user  system elapsed 
-##  62.450   2.069  65.779
+##  58.509   1.296  60.013
 ```
 
 ---
@@ -313,23 +345,15 @@ color_purrr &lt;-
       mymodel = data %&gt;% furrr::future_map(.f = function(d) 
         randomForest(color ~ carat+cut+depth+table+price+x+y+z, 
                            data = d, ntree = 1000),
-        .options = furrr_options(seed=NULL)
+        .options = furrr_options(seed=TRUE)
         )
     )
-```
-
-```
-## Warning: UNRELIABLE VALUE: Future ('&lt;none&gt;') unexpectedly generated random
-## numbers without specifying argument 'seed'. There is a risk that those random
-## numbers are not statistically sound and the overall results might be invalid.
-## To fix this, specify 'seed=TRUE'. This ensures that proper, parallel-safe random
-## numbers are produced via the L'Ecuyer-CMRG method. To disable this check, use
-## 'seed=NULL', or set option 'future.rng.onMisuse' to "ignore".
-```
-
-```r
 ptm3_purrr &lt;- proc.time()
 ```
+
+---
+
+# Performance of furrr
 
 Much better than with just `future`, but not nearly sixteen times the speed
 
@@ -339,7 +363,7 @@ ptm3_purrr - ptm2_purrr
 
 ```
 ##    user  system elapsed 
-##  61.686   1.522  63.453
+##  59.429   1.332  61.013
 ```
 
 ---
